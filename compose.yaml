@@ -1,0 +1,45 @@
+name: enterprise-agent-security
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: ["start-dev","--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: dev-admin-change-me
+    volumes:
+      - ./infrastructure/keycloak:/opt/keycloak/data/import:ro
+    ports:
+      - "127.0.0.1:8081:8080"
+    healthcheck:
+      test: ["CMD-SHELL","bash -c 'echo > /dev/tcp/127.0.0.1/8080'"]
+      interval: 10s
+      retries: 30
+  opa:
+    image: openpolicyagent/opa:0.70.0
+    command: ["run","--server","--addr=0.0.0.0:8181","/policy"]
+    volumes:
+      - ./policies:/policy:ro
+  registry:
+    build: ./services/control-api
+    environment:
+      MODE: registry
+      DB_PATH: /data/registry.db
+      ADMIN_KEY: ${LAB_ADMIN_KEY:-local-demo-admin-key}
+    volumes:
+      - registry_data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+  gateway:
+    build: ./services/control-api
+    environment:
+      MODE: gateway
+      REGISTRY_URL: http://registry:8000
+      OPA_URL: http://opa:8181/v1/data/agent/authz/allow
+      JWKS_URL: http://keycloak:8080/realms/agent-lab/protocol/openid-connect/certs
+      EXPECTED_ISSUER: http://localhost:8081/realms/agent-lab
+      EXPECTED_AUDIENCE: agent-tool-gateway
+    ports:
+      - "127.0.0.1:8001:8000"
+    depends_on: [registry, opa, keycloak]
+volumes:
+  registry_data:
