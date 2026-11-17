@@ -1,0 +1,846 @@
+{
+  "schema_version": "0.1",
+  "status": "draft",
+  "controls": [
+    {
+      "id": "REG-01",
+      "name": "Agent inventory",
+      "tier": "foundational",
+      "objective": "Ensure agent inventory is enforced for agents and protected actions.",
+      "owner": "AI governance / platform",
+      "enforcement_point": "Registry / admission workflow",
+      "open_source_candidates": [
+        "FastAPI registry",
+        "Backstage"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "Microsoft Entra Agent ID"
+      ],
+      "test": "Attempt to bypass or violate agent inventory; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "initial lab coverage"
+    },
+    {
+      "id": "REG-02",
+      "name": "Accountable ownership",
+      "tier": "foundational",
+      "objective": "Ensure accountable ownership is enforced for agents and protected actions.",
+      "owner": "AI governance / platform",
+      "enforcement_point": "Registry / admission workflow",
+      "open_source_candidates": [
+        "FastAPI registry",
+        "Backstage"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "Microsoft Entra Agent ID"
+      ],
+      "test": "Attempt to bypass or violate accountable ownership; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "REG-03",
+      "name": "Risk classification",
+      "tier": "foundational",
+      "objective": "Ensure risk classification is enforced for agents and protected actions.",
+      "owner": "AI governance / platform",
+      "enforcement_point": "Registry / admission workflow",
+      "open_source_candidates": [
+        "FastAPI registry",
+        "Backstage"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "Microsoft Entra Agent ID"
+      ],
+      "test": "Attempt to bypass or violate risk classification; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "REG-04",
+      "name": "Approval gate",
+      "tier": "foundational",
+      "objective": "Ensure approval gate is enforced for agents and protected actions.",
+      "owner": "AI governance / platform",
+      "enforcement_point": "Registry / admission workflow",
+      "open_source_candidates": [
+        "FastAPI registry",
+        "Backstage"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "Microsoft Entra Agent ID"
+      ],
+      "test": "Attempt to bypass or violate approval gate; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "initial lab coverage"
+    },
+    {
+      "id": "IAM-01",
+      "name": "Unique workload identity",
+      "tier": "foundational",
+      "objective": "Ensure unique workload identity is enforced for agents and protected actions.",
+      "owner": "IAM / platform",
+      "enforcement_point": "Identity provider / API authentication",
+      "open_source_candidates": [
+        "Keycloak",
+        "SPIRE",
+        "OpenBao"
+      ],
+      "commercial_candidates": [
+        "Okta",
+        "Microsoft Entra",
+        "CyberArk"
+      ],
+      "test": "Attempt to bypass or violate unique workload identity; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "IAM-02",
+      "name": "Verified authentication",
+      "tier": "foundational",
+      "objective": "Ensure verified authentication is enforced for agents and protected actions.",
+      "owner": "IAM / platform",
+      "enforcement_point": "Identity provider / API authentication",
+      "open_source_candidates": [
+        "Keycloak",
+        "SPIRE",
+        "OpenBao"
+      ],
+      "commercial_candidates": [
+        "Okta",
+        "Microsoft Entra",
+        "CyberArk"
+      ],
+      "test": "Attempt to bypass or violate verified authentication; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "initial lab coverage"
+    },
+    {
+      "id": "IAM-03",
+      "name": "Credential expiry and rotation",
+      "tier": "foundational",
+      "objective": "Ensure credential expiry and rotation is enforced for agents and protected actions.",
+      "owner": "IAM / platform",
+      "enforcement_point": "Identity provider / API authentication",
+      "open_source_candidates": [
+        "Keycloak",
+        "SPIRE",
+        "OpenBao"
+      ],
+      "commercial_candidates": [
+        "Okta",
+        "Microsoft Entra",
+        "CyberArk"
+      ],
+      "test": "Attempt to bypass or violate credential expiry and rotation; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "IAM-04",
+      "name": "Identity revocation",
+      "tier": "foundational",
+      "objective": "Ensure identity revocation is enforced for agents and protected actions.",
+      "owner": "IAM / platform",
+      "enforcement_point": "Identity provider / API authentication",
+      "open_source_candidates": [
+        "Keycloak",
+        "SPIRE",
+        "OpenBao"
+      ],
+      "commercial_candidates": [
+        "Okta",
+        "Microsoft Entra",
+        "CyberArk"
+      ],
+      "test": "Attempt to bypass or violate identity revocation; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "AUTH-01",
+      "name": "Least privilege",
+      "tier": "foundational",
+      "objective": "Ensure least privilege is enforced for agents and protected actions.",
+      "owner": "IAM / application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "OPA",
+        "OpenFGA",
+        "Envoy"
+      ],
+      "commercial_candidates": [
+        "AWS Verified Permissions",
+        "Cerbos Hub",
+        "Kong"
+      ],
+      "test": "Attempt to bypass or violate least privilege; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "AUTH-02",
+      "name": "Tool/action authorization",
+      "tier": "foundational",
+      "objective": "Ensure tool/action authorization is enforced for agents and protected actions.",
+      "owner": "IAM / application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "OPA",
+        "OpenFGA",
+        "Envoy"
+      ],
+      "commercial_candidates": [
+        "AWS Verified Permissions",
+        "Cerbos Hub",
+        "Kong"
+      ],
+      "test": "Attempt to bypass or violate tool/action authorization; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "initial lab coverage"
+    },
+    {
+      "id": "AUTH-03",
+      "name": "Resource-scoped authorization",
+      "tier": "foundational",
+      "objective": "Ensure resource-scoped authorization is enforced for agents and protected actions.",
+      "owner": "IAM / application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "OPA",
+        "OpenFGA",
+        "Envoy"
+      ],
+      "commercial_candidates": [
+        "AWS Verified Permissions",
+        "Cerbos Hub",
+        "Kong"
+      ],
+      "test": "Attempt to bypass or violate resource-scoped authorization; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "AUTH-04",
+      "name": "Default-deny enforcement",
+      "tier": "foundational",
+      "objective": "Ensure default-deny enforcement is enforced for agents and protected actions.",
+      "owner": "IAM / application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "OPA",
+        "OpenFGA",
+        "Envoy"
+      ],
+      "commercial_candidates": [
+        "AWS Verified Permissions",
+        "Cerbos Hub",
+        "Kong"
+      ],
+      "test": "Attempt to bypass or violate default-deny enforcement; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "initial lab coverage"
+    },
+    {
+      "id": "RUN-01",
+      "name": "Artifact provenance",
+      "tier": "foundational",
+      "objective": "Ensure artifact provenance is enforced for agents and protected actions.",
+      "owner": "Platform security",
+      "enforcement_point": "Build pipeline / runtime",
+      "open_source_candidates": [
+        "Sigstore Cosign",
+        "Docker",
+        "Cilium"
+      ],
+      "commercial_candidates": [
+        "Wiz",
+        "Prisma Cloud",
+        "CrowdStrike"
+      ],
+      "test": "Attempt to bypass or violate artifact provenance; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "RUN-02",
+      "name": "Runtime isolation",
+      "tier": "foundational",
+      "objective": "Ensure runtime isolation is enforced for agents and protected actions.",
+      "owner": "Platform security",
+      "enforcement_point": "Build pipeline / runtime",
+      "open_source_candidates": [
+        "Sigstore Cosign",
+        "Docker",
+        "Cilium"
+      ],
+      "commercial_candidates": [
+        "Wiz",
+        "Prisma Cloud",
+        "CrowdStrike"
+      ],
+      "test": "Attempt to bypass or violate runtime isolation; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "RUN-03",
+      "name": "Network segmentation",
+      "tier": "foundational",
+      "objective": "Ensure network segmentation is enforced for agents and protected actions.",
+      "owner": "Platform security",
+      "enforcement_point": "Build pipeline / runtime",
+      "open_source_candidates": [
+        "Sigstore Cosign",
+        "Docker",
+        "Cilium"
+      ],
+      "commercial_candidates": [
+        "Wiz",
+        "Prisma Cloud",
+        "CrowdStrike"
+      ],
+      "test": "Attempt to bypass or violate network segmentation; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "TOOL-01",
+      "name": "Tool inventory",
+      "tier": "foundational",
+      "objective": "Ensure tool inventory is enforced for agents and protected actions.",
+      "owner": "Application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "MCP gateway",
+        "Pydantic",
+        "Presidio",
+        "OPA"
+      ],
+      "commercial_candidates": [
+        "Kong",
+        "Apigee",
+        "Microsoft Purview"
+      ],
+      "test": "Attempt to bypass or violate tool inventory; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "TOOL-02",
+      "name": "Input/schema validation",
+      "tier": "foundational",
+      "objective": "Ensure input/schema validation is enforced for agents and protected actions.",
+      "owner": "Application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "MCP gateway",
+        "Pydantic",
+        "Presidio",
+        "OPA"
+      ],
+      "commercial_candidates": [
+        "Kong",
+        "Apigee",
+        "Microsoft Purview"
+      ],
+      "test": "Attempt to bypass or violate input/schema validation; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "TOOL-03",
+      "name": "Data access restrictions",
+      "tier": "foundational",
+      "objective": "Ensure data access restrictions is enforced for agents and protected actions.",
+      "owner": "Application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "MCP gateway",
+        "Pydantic",
+        "Presidio",
+        "OPA"
+      ],
+      "commercial_candidates": [
+        "Kong",
+        "Apigee",
+        "Microsoft Purview"
+      ],
+      "test": "Attempt to bypass or violate data access restrictions; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "TOOL-04",
+      "name": "High-impact approval",
+      "tier": "foundational",
+      "objective": "Ensure high-impact approval is enforced for agents and protected actions.",
+      "owner": "Application security",
+      "enforcement_point": "Tool gateway / protected API",
+      "open_source_candidates": [
+        "MCP gateway",
+        "Pydantic",
+        "Presidio",
+        "OPA"
+      ],
+      "commercial_candidates": [
+        "Kong",
+        "Apigee",
+        "Microsoft Purview"
+      ],
+      "test": "Attempt to bypass or violate high-impact approval; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "OBS-01",
+      "name": "Correlated traces",
+      "tier": "foundational",
+      "objective": "Ensure correlated traces is enforced for agents and protected actions.",
+      "owner": "Security operations",
+      "enforcement_point": "Telemetry pipeline / audit store",
+      "open_source_candidates": [
+        "OpenTelemetry",
+        "Loki",
+        "Grafana",
+        "Tempo"
+      ],
+      "commercial_candidates": [
+        "Datadog",
+        "Splunk",
+        "Microsoft Sentinel"
+      ],
+      "test": "Attempt to bypass or violate correlated traces; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "OBS-02",
+      "name": "Tamper-aware audit records",
+      "tier": "foundational",
+      "objective": "Ensure tamper-aware audit records is enforced for agents and protected actions.",
+      "owner": "Security operations",
+      "enforcement_point": "Telemetry pipeline / audit store",
+      "open_source_candidates": [
+        "OpenTelemetry",
+        "Loki",
+        "Grafana",
+        "Tempo"
+      ],
+      "commercial_candidates": [
+        "Datadog",
+        "Splunk",
+        "Microsoft Sentinel"
+      ],
+      "test": "Attempt to bypass or violate tamper-aware audit records; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "initial lab coverage"
+    },
+    {
+      "id": "OBS-03",
+      "name": "Security alerting",
+      "tier": "foundational",
+      "objective": "Ensure security alerting is enforced for agents and protected actions.",
+      "owner": "Security operations",
+      "enforcement_point": "Telemetry pipeline / audit store",
+      "open_source_candidates": [
+        "OpenTelemetry",
+        "Loki",
+        "Grafana",
+        "Tempo"
+      ],
+      "commercial_candidates": [
+        "Datadog",
+        "Splunk",
+        "Microsoft Sentinel"
+      ],
+      "test": "Attempt to bypass or violate security alerting; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "OBS-04",
+      "name": "Evidence retention",
+      "tier": "foundational",
+      "objective": "Ensure evidence retention is enforced for agents and protected actions.",
+      "owner": "Security operations",
+      "enforcement_point": "Telemetry pipeline / audit store",
+      "open_source_candidates": [
+        "OpenTelemetry",
+        "Loki",
+        "Grafana",
+        "Tempo"
+      ],
+      "commercial_candidates": [
+        "Datadog",
+        "Splunk",
+        "Microsoft Sentinel"
+      ],
+      "test": "Attempt to bypass or violate evidence retention; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "IR-01",
+      "name": "Emergency suspension",
+      "tier": "foundational",
+      "objective": "Ensure emergency suspension is enforced for agents and protected actions.",
+      "owner": "Incident response",
+      "enforcement_point": "Registry / identity provider / runtime",
+      "open_source_candidates": [
+        "Registry API",
+        "Keycloak",
+        "Docker"
+      ],
+      "commercial_candidates": [
+        "Okta",
+        "CyberArk",
+        "Defender"
+      ],
+      "test": "Attempt to bypass or violate emergency suspension; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "initial lab coverage"
+    },
+    {
+      "id": "IR-02",
+      "name": "Credential and runtime containment",
+      "tier": "foundational",
+      "objective": "Ensure credential and runtime containment is enforced for agents and protected actions.",
+      "owner": "Incident response",
+      "enforcement_point": "Registry / identity provider / runtime",
+      "open_source_candidates": [
+        "Registry API",
+        "Keycloak",
+        "Docker"
+      ],
+      "commercial_candidates": [
+        "Okta",
+        "CyberArk",
+        "Defender"
+      ],
+      "test": "Attempt to bypass or violate credential and runtime containment; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "IR-03",
+      "name": "Recovery verification",
+      "tier": "foundational",
+      "objective": "Ensure recovery verification is enforced for agents and protected actions.",
+      "owner": "Incident response",
+      "enforcement_point": "Registry / identity provider / runtime",
+      "open_source_candidates": [
+        "Registry API",
+        "Keycloak",
+        "Docker"
+      ],
+      "commercial_candidates": [
+        "Okta",
+        "CyberArk",
+        "Defender"
+      ],
+      "test": "Attempt to bypass or violate recovery verification; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "LIFE-01",
+      "name": "Version/change governance",
+      "tier": "foundational",
+      "objective": "Ensure version/change governance is enforced for agents and protected actions.",
+      "owner": "AI governance / IAM",
+      "enforcement_point": "Registry / identity provider",
+      "open_source_candidates": [
+        "GitOps",
+        "Backstage",
+        "registry API"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "SailPoint",
+        "Saviynt"
+      ],
+      "test": "Attempt to bypass or violate version/change governance; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "LIFE-02",
+      "name": "Periodic recertification",
+      "tier": "foundational",
+      "objective": "Ensure periodic recertification is enforced for agents and protected actions.",
+      "owner": "AI governance / IAM",
+      "enforcement_point": "Registry / identity provider",
+      "open_source_candidates": [
+        "GitOps",
+        "Backstage",
+        "registry API"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "SailPoint",
+        "Saviynt"
+      ],
+      "test": "Attempt to bypass or violate periodic recertification; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "LIFE-03",
+      "name": "Retirement workflow",
+      "tier": "foundational",
+      "objective": "Ensure retirement workflow is enforced for agents and protected actions.",
+      "owner": "AI governance / IAM",
+      "enforcement_point": "Registry / identity provider",
+      "open_source_candidates": [
+        "GitOps",
+        "Backstage",
+        "registry API"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "SailPoint",
+        "Saviynt"
+      ],
+      "test": "Attempt to bypass or violate retirement workflow; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    },
+    {
+      "id": "LIFE-04",
+      "name": "Orphan detection",
+      "tier": "foundational",
+      "objective": "Ensure orphan detection is enforced for agents and protected actions.",
+      "owner": "AI governance / IAM",
+      "enforcement_point": "Registry / identity provider",
+      "open_source_candidates": [
+        "GitOps",
+        "Backstage",
+        "registry API"
+      ],
+      "commercial_candidates": [
+        "ServiceNow",
+        "SailPoint",
+        "Saviynt"
+      ],
+      "test": "Attempt to bypass or violate orphan detection; assert protected operation is denied or detected as specified.",
+      "evidence": [
+        "agent_id",
+        "test_case_id",
+        "timestamp",
+        "decision",
+        "policy_version",
+        "trace_id"
+      ],
+      "lab_status": "planned"
+    }
+  ]
+}
