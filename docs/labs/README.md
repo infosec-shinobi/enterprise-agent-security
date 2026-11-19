@@ -1,12 +1,12 @@
 # Hands-on lab roadmap
 
-The first release will build one Docker Compose environment incrementally. Labs are planned, not yet deployable.
+The labs build on Docker Compose incrementally. Lab 01 was completed successfully by a Windows PowerShell user. Lab 02 is an experimental SPIRE server/agent scaffold; Lab 03 is an unverified OpenBao policy/revocation exercise. Neither SPIFFE-to-OpenBao integration nor workload SVID retrieval is yet implemented. See the [cross-platform standard](cross-platform-standard.md).
 
 | Lab | Scenario | Proof |
 | --- | --- | --- |
 | 01 | Registry and approval | Unregistered/unapproved agents denied |
-| 02 | Workload identity | Impersonation rejected |
-| 03 | Tool authorization | Read allowed; delete denied |
+| [02](../../labs/02-spiffe-spire/README.md) | SPIRE node bootstrap (experimental) | Workload SVID/impersonation test pending |
+| [03](../../labs/03-openbao/README.md) | OpenBao policy and token revocation (experimental) | Scoped read allowed; other read denied; revoked token denied |
 | 04 | Credential lifecycle | Scoped issuance and revocation |
 | 05 | MCP tool governance | Unapproved tool denied |
 | 06 | Human approval | High-impact action waits for approval |
