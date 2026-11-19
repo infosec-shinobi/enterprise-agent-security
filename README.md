@@ -55,13 +55,13 @@ flowchart TB
 - `docs/architecture/` — lifecycle, planes, trust boundaries, diagrams
 - `docs/controls/` — foundational and advanced control catalog design
 - `docs/labs/` — lab progression and validation requirements
-- `labs/` — deployable exercises (planned)
-- `infrastructure/` — Docker Compose reference environment (planned)
+- `labs/` — Lab 01 user-validated on Windows; [Lab 02 SPIRE](labs/02-spiffe-spire/README.md) experimental scaffold; [Lab 03 OpenBao](labs/03-openbao/README.md) unverified exercise
+- `infrastructure/` — Docker Compose configuration and lab integrations
 - `dashboard/` — evidence-based control scorecard (planned)
 
 ## First milestone
 
-Demonstrate **register → approve → authenticate → authorize → act → observe → suspend** with a synthetic customer-record API. Test unregistered, unapproved, unauthorized, suspended, and fail-closed scenarios. The initial build will use Docker Compose, Keycloak, OPA, a registry API, a tool enforcement proxy, and OpenTelemetry. SPIRE and OpenFGA are later increments.
+Demonstrate **register → approve → authenticate → authorize → act → observe → suspend** with a synthetic customer-record API. Test unregistered, unapproved, unauthorized, suspended, and fail-closed scenarios. The initial build will use Docker Compose, Keycloak, OPA, a registry API, a tool enforcement proxy, and OpenTelemetry. SPIRE and OpenBao have separate experimental Compose overlays; their integration with the Lab 01 gateway remains future work.
 
 ## Principles
 
