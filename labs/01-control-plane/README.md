@@ -13,7 +13,35 @@ docker compose ps
 
 Wait for Keycloak to initialize (first boot may take a minute).
 
-## Obtain a client credentials token
+## Windows PowerShell 7+
+
+Run these commands in PowerShell. These use native PowerShell HTTP commands, not Bash `curl` syntax.
+
+```powershell
+$response = Invoke-RestMethod -Uri 'http://localhost:8081/realms/agent-lab/protocol/openid-connect/token' -Method POST -Body @{ grant_type='client_credentials'; client_id='agent-demo'; client_secret='local-demo-secret' }
+$TOKEN = $response.access_token
+$TOKEN.Length
+```
+
+Then test the lifecycle (HTTP 403 is an expected result for denied actions):
+
+```powershell
+$headers = @{ Authorization = "Bearer $TOKEN" }
+$admin = @{ 'X-Lab-Admin-Key' = 'local-demo-admin-key' }
+Invoke-WebRequest -Uri 'http://localhost:8001/tools/records/123' -Headers $headers -SkipHttpErrorCheck | Select-Object StatusCode,Content
+Invoke-RestMethod -Method POST -Uri 'http://localhost:8000/agents/agent-demo?owner=lab-owner' -Headers $admin
+Invoke-WebRequest -Uri 'http://localhost:8001/tools/records/123' -Headers $headers -SkipHttpErrorCheck | Select-Object StatusCode,Content
+Invoke-RestMethod -Method POST -Uri 'http://localhost:8000/agents/agent-demo/state/active' -Headers $admin
+Invoke-WebRequest -Uri 'http://localhost:8001/tools/records/123' -Headers $headers -SkipHttpErrorCheck | Select-Object StatusCode,Content
+Invoke-WebRequest -Method DELETE -Uri 'http://localhost:8001/tools/records/123' -Headers $headers -SkipHttpErrorCheck | Select-Object StatusCode,Content
+Invoke-RestMethod -Method POST -Uri 'http://localhost:8000/agents/agent-demo/state/suspended' -Headers $admin
+Invoke-WebRequest -Uri 'http://localhost:8001/tools/records/123' -Headers $headers -SkipHttpErrorCheck | Select-Object StatusCode,Content
+docker compose logs gateway
+```
+
+Expected gateway HTTP statuses: **403, 403, 200, 403, 403**. Re-running registration after a prior attempt returns 409; use `docker compose down -v` to reset. PowerShell 5.1 lacks `-SkipHttpErrorCheck`; use PowerShell 7+ or catch HTTP errors explicitly.
+
+## Obtain a client credentials token (Bash)
 
 ```bash
 TOKEN=$(curl -fsS -X POST http://localhost:8081/realms/agent-lab/protocol/openid-connect/token -d grant_type=client_credentials -d client_id=agent-demo -d client_secret=local-demo-secret | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
