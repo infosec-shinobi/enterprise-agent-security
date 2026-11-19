@@ -1,0 +1,28 @@
+# Optional identity lab; does not change Lab 01.
+# CAUTION: development-only SPIRE bootstrap; do not expose these services.
+services:
+  spire-server:
+    image: ghcr.io/spiffe/spire-server:1.11.2
+    command: ["-config", "/run/spire/config/server.conf"]
+    volumes:
+      - ./infrastructure/spire/server.conf:/run/spire/config/server.conf:ro
+      - spire_server_data:/run/spire/data
+      - spire_server_socket:/run/spire/sockets
+    healthcheck:
+      test: ["CMD", "/opt/spire/bin/spire-server", "healthcheck", "-socketPath", "/run/spire/sockets/api.sock"]
+      interval: 10s
+      retries: 20
+  spire-agent:
+    image: ghcr.io/spiffe/spire-agent:1.11.2
+    command: ["-config", "/run/spire/config/agent.conf", "-joinToken", "${SPIRE_JOIN_TOKEN:?Set SPIRE_JOIN_TOKEN from server registration}"]
+    volumes:
+      - ./infrastructure/spire/agent.conf:/run/spire/config/agent.conf:ro
+      - spire_agent_data:/run/spire/data
+      - spire_workload_socket:/run/spire/sockets
+    depends_on: [spire-server]
+    pid: host
+volumes:
+  spire_server_data:
+  spire_server_socket:
+  spire_agent_data:
+  spire_workload_socket:
