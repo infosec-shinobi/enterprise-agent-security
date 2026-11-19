@@ -2,7 +2,7 @@ package agent.authz
 
 default allow = false
 
-allow if {
+allow {
   input.identity_valid == true
   input.registered == true
   input.lifecycle == "active"
