@@ -2,6 +2,7 @@ import {StrictMode,useEffect,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {getHealth} from './api';
 import './style.css';
+import Labs from './Labs';
 
 const pages = [
  ['Overview','B01','Application status and development milestones.'],
@@ -30,11 +31,11 @@ function App(){
  },[attempt]);
  const selected=pages.find(p=>p[0]===page)!;
  return <div className="shell">
-  <aside><div className="brand"><span className="mark">EAS</span><div>Enterprise Agent<br/>Security</div></div><small>PLAYGROUND / LOCAL</small><nav aria-label="Main navigation">{pages.map(p=><button key={p[0]} aria-current={page===p[0]?'page':undefined} onClick={()=>setPage(p[0])}>{p[0]}</button>)}</nav><div className="foot">Development build · B01</div></aside>
+  <aside><div className="brand"><span className="mark">EAS</span><div>Enterprise Agent<br/>Security</div></div><small>PLAYGROUND / LOCAL</small><nav aria-label="Main navigation">{pages.map(p=><button key={p[0]} aria-current={page===p[0]?'page':undefined} onClick={()=>setPage(p[0])}>{p[0]}</button>)}</nav><div className="foot">Development build · B02</div></aside>
   <main><header><span>Workspace / {page}</span><button onClick={()=>setDark(!dark)}>{dark?'Light mode':'Dark mode'}</button></header>
   <section className="intro"><small>SECURITY ENGINEERING WORKSPACE</small><h1>{page==='Overview'?'Agent Security Playground':page}</h1><p>{selected[2]}</p></section>
   <div className="status"><div><small>PLAYGROUND API</small><strong role="status" className={status}>{status==='connected'?'Connected':status==='checking'?'Checking…':'Unavailable'}</strong><p>API connectivity only; lab services are not checked.</p></div><button onClick={()=>setAttempt(a=>a+1)}>Refresh</button></div>
-  {page==='Overview'?<><h2>Explore the workspace</h2><div className="cards">{pages.slice(1).map(p=><button className="tile" key={p[0]} onClick={()=>setPage(p[0])}><small>{p[1]} · PLANNED</small><h3>{p[0]}</h3><p>{p[2]}</p><span>Explore →</span></button>)}</div></>:<section className="placeholder"><small>{selected[1]} · PLANNED</small><h2>{page==='Frameworks'?'Canonical controls, multiple frameworks':'Not implemented yet'}</h2><p>{page==='Frameworks'?'Native controls will remain the source of truth. Versioned external mappings will link framework outcomes to controls and evidence. No mappings or compliance results are loaded in B01.':'This workspace is reserved for a later roadmap task. No live results are available here yet.'}</p><button onClick={()=>setPage('Overview')}>Back to overview</button></section>}
+  {page==='Overview'?<><h2>Explore the workspace</h2><div className="cards">{pages.slice(1).map(p=><button className="tile" key={p[0]} onClick={()=>setPage(p[0])}><small>{p[1]} · {p[0]==='Labs'?'AVAILABLE':'PLANNED'}</small><h3>{p[0]}</h3><p>{p[2]}</p><span>Explore →</span></button>)}</div></>:page==='Labs'?<Labs/>:<section className="placeholder"><small>{selected[1]} · PLANNED</small><h2>{page==='Frameworks'?'Canonical controls, multiple frameworks':'Not implemented yet'}</h2><p>{page==='Frameworks'?'Native controls will remain the source of truth. Versioned external mappings will link framework outcomes to controls and evidence. No mappings or compliance results are loaded in B01.':'This workspace is reserved for a later roadmap task. No live results are available here yet.'}</p><button onClick={()=>setPage('Overview')}>Back to overview</button></section>}
   </main></div>
 }
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>);
