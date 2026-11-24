@@ -40,4 +40,4 @@ Open http://127.0.0.1:5173. Direct API docs http://127.0.0.1:8090/docs. Four API
 
 ## Regression
 
-From root, with integration opt-in unset, run existing tools unittest discovery (PowerShell: .\.venv\Scripts\python.exe -m unittest discover -s tools -p "test_*.py" -v; Bash: .venv/bin/python -m unittest discover -s tools -p 'test_*.py' -v). Expect 22 passes and one skip. B01 pending local validation.
+From root, with integration opt-in unset, run existing tools unittest discovery (PowerShell: .\.venv\Scripts\python.exe -m unittest discover -s tools -p "test_*.py" -v; Bash: .venv/bin/python -m unittest discover -s tools -p 'test_*.py' -v). Expect 22 passes and one skip. B01 validated by user on Windows: all 14 acceptance checks passed, including four API tests, frontend build, navigation, theme persistence, API failure/recovery and existing regression suite. Linux/macOS, dependency lockfile review and security audit remain outstanding.
