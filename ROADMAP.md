@@ -16,7 +16,7 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: A06 — Validate offline regression and opt-in Compose integration tests.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: B01 — Scaffold dashboard and API.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -29,7 +29,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | Complete · A03 | Build HTTP runner | 60–90m | A02 | Python runner with timeouts and token handling | Executes real HTTP requests; redacts tokens; distinguishes 401/403/503 |
 | Complete · A04 | Automate Lab 01 lifecycle | 60–90m | A03 | Setup, five assertions and cleanup | Fresh isolated state produces 403/403/200/403/403; repeatable |
 | Complete · A05 | Add evidence format and CLI | 45–60m | A04 | JSON results and CLI exit codes | Expected and actual status, timestamps, run ID and failure reason recorded |
-| In progress · A06 | Add regression tests | 45–90m | A05 | Unit tests and opt-in Compose integration test | Unit tests pass; integration result recorded separately |
+| Complete · A06 | Add regression tests | 45–90m | A05 | Unit tests and opt-in Compose integration test | Unit tests pass; integration result recorded separately |
 
 ### B — Playground MVP
 
@@ -91,6 +91,19 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | Open · F05 | CI and release checklist | 60–90m | A06,F04 | CI, dependency checks and release notes | Tests run in CI; limitations documented |
 | Open · F06 | Architecture and catalog review | 60–90m | F02 | Updated diagrams and advanced control backlog | Implemented vs proposed components clearly distinguished |
 
+### G — Framework alignment and assurance
+
+| Status / ID | Task | Timebox | Depends on | Deliverable | Acceptance criteria |
+| --- | --- | --- | --- | --- | --- |
+| Open · G01 | Define versioned framework mapping contract | 45–60m | A02 | Schema and mapping ADR | Many-to-many mappings, source/version, rationale, review status and limitations; canonical control IDs unchanged |
+| Open · G02 | Build NIST AI RMF crosswalk | 60–90m | G01 | Reviewed subcategory mappings for foundational controls | Source references verified; partial and unmapped outcomes explicit; no implied compliance |
+| Open · G03 | Add additional framework packs | 60–90m per pack | G01 | NIST AI 600-1, OWASP agentic risks and optional NIST SP 800-53 mappings; MITRE ATLAS as separate threat taxonomy | Versioned source references and reviewed relationships; threat coverage distinct from control coverage |
+| Open · G04 | Project evidence into framework outcomes | 60–90m | G02,F01 | Framework evidence aggregation | Existing run evidence reused; tested, failed, untested and unmapped distinguished; partial alignment never reported as full satisfaction |
+| Open · G05 | Build framework selector and drilldown | 60–90m | G04,F02 | Native and external framework views | Filter by framework outcome, trace to controls, scenarios, evidence and limitations |
+| Open · G06 | Support custom organizational profiles and exports | 60–90m | G05,F03 | Validated local mapping packs and reports | Import declarative mappings without executing code; versioned exports include provenance and gaps |
+
+Start G01/G02 alongside or after the GUI MVP; do not block B01. Pin published framework versions and review revisions separately. NIST AI RMF is a risk outcomes framework, not a technical certification checklist. See https://www.nist.gov/itl/ai-risk-management-framework and https://airc.nist.gov/airmf-resources/playbook/.
+
 ## Definition of done
 
 - Small reviewable commit; documentation and relevant tests updated.
@@ -101,6 +114,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 - Service outage, policy denial and intentional enforcement bypass remain distinct.
 - Localhost-only UI, synthetic data, secure defaults, bounded operations, no unrestricted Docker socket, no arbitrary command execution. Sandbox bypass never changes the default environment.
 - No production readiness or control effectiveness claims without supporting evidence.
+- External framework mappings are versioned, source-linked and reviewed; lab evidence does not imply framework compliance.
 
 ## Session log
 
@@ -119,3 +133,5 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | A05 implementation | A05 | Versioned evidence schema, persistence, report CLI and unit tests published; execution pending | Validate success and blocked-run reports |
 | A05 validation | A05 | User confirmed all 12 checks: seven unit tests, successful run exit 0, JSON metadata and assertions/control mappings, cleanup success, CLI report, occupied-port exit 2 with five not_run scenarios, separate files and Git exclusion | A06 |
 | A06 implementation | A06 | Offline regression and opt-in two-run Compose integration suite published; execution pending | Validate both suites separately |
+| A06 validation | A06 | User confirmed all ten acceptance checks: 22 offline tests pass, one integration skip by default, two real runs pass with distinct evidence and scoped cleanup; Windows user-reported | B01 |
+| Framework alignment planning | G01–G06 | Added versioned crosswalks, framework evidence views and custom profiles; implementation pending | B01 remains next |
