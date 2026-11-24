@@ -172,6 +172,28 @@ docker compose down -v
 
 **Expected gateway status sequence:** 403 → 403 → 200 → 403 → 403.
 
+## Machine-readable manifest
+
+The [manifest.yaml](manifest.yaml) describes the five ordered gateway assertions. It does not execute the lab. Action IDs are reserved for A03/A04 trusted runner implementations; setup, registration, activation and suspension must succeed before their corresponding gateway assertions. Start with an isolated fresh registry. Keep the token used for the active read valid through the suspension test; if expired, the run must not count as a passing suspension test. A 401 or 503 never satisfies an expected 403. Control mappings describe partial evidence, not full control effectiveness. IAM-02 negative authentication tests, credential revocation and trace assertions are outside these five scenarios.
+
+Validate from the repository root using the A01 virtual environment (see [manifest format](../../docs/labs/manifest-format.md) for installation):
+
+**Bash**
+
+```bash
+.venv/bin/python tools/validate_manifest.py labs/01-control-plane/manifest.yaml
+echo $?
+```
+
+**PowerShell**
+
+```powershell
+.\.venv\Scripts\python.exe tools/validate_manifest.py labs/01-control-plane/manifest.yaml
+$LASTEXITCODE
+```
+
+Expected: VALID, exit 0. This checks schema and catalog references, not live behavior or action implementation.
+
 ## Troubleshooting (both shells)
 
 | Symptom | Likely cause | Command |
