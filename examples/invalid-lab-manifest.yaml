@@ -1,0 +1,13 @@
+schema_version: 1
+id: invalid-example
+title: Invalid example
+description: Deliberately malformed expected status.
+manual: README.md
+services: [gateway]
+scenarios:
+  - id: deny-delete
+    title: Reject deletion
+    controls: [AUTH-02]
+    action: example-deny-delete
+    expected:
+      http_status: "403"
