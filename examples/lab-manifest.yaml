@@ -1,0 +1,13 @@
+schema_version: 1
+id: example-lab
+title: Example authorization exercise
+description: Illustrative manifest only; not a discovered runnable lab.
+manual: README.md
+services: [gateway, opa]
+scenarios:
+  - id: deny-delete
+    title: Reject unauthorized deletion
+    controls: [AUTH-02]
+    action: example-deny-delete
+    expected:
+      http_status: 403
