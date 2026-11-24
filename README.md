@@ -4,6 +4,10 @@ An open-source, vendor-neutral framework for securing AI agents across their ent
 
 > **Status:** Early foundation / architecture draft. No production-readiness claims. Labs use synthetic data and isolated environments.
 
+## Development roadmap
+
+The project is evolving into an interactive agent security playground with manual labs, real automated autopilot runs, sandbox control toggles, live topology and an evidence scorecard. See the [incremental development roadmap](ROADMAP.md) for small work packages, dependencies, acceptance criteria and the next recommended task. All labs follow the [cross-platform standard](docs/labs/cross-platform-standard.md).
+
 ## Two views of agent security
 
 1. **Lifecycle view:** Discover and register → assess and approve → provision identity → authorize and deploy → execute → observe and respond → review → retire.
@@ -57,7 +61,7 @@ flowchart TB
 - `docs/labs/` — lab progression and validation requirements
 - `labs/` — Lab 01 user-validated on Windows; [Lab 02 SPIRE](labs/02-spiffe-spire/README.md) experimental scaffold; [Lab 03 OpenBao](labs/03-openbao/README.md) unverified exercise
 - `infrastructure/` — Docker Compose configuration and lab integrations
-- `dashboard/` — evidence-based control scorecard (planned)
+- `dashboard/` — interactive playground, live lab execution and evidence scorecard (planned)
 
 ## First milestone
 
