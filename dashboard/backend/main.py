@@ -1,0 +1,28 @@
+"""Local read-only playground API. No lab execution in B01."""
+from typing import Literal
+from fastapi import FastAPI
+from pydantic import BaseModel
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+
+app = FastAPI(title="Enterprise Agent Security Playground", version="0.1.0")
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "testserver"])
+
+class Health(BaseModel):
+    status: Literal["ok"] = "ok"
+    service: Literal["playground-api"] = "playground-api"
+    api_version: Literal["v1"] = "v1"
+
+@app.get("/api/v1/health", response_model=Health)
+def health():
+    return Health()
+
+class Capabilities(BaseModel):
+    lab_discovery: bool = False
+    service_health: bool = False
+    execution: bool = False
+    evidence: bool = False
+    framework_mapping: bool = False
+
+@app.get("/api/v1/capabilities", response_model=Capabilities)
+def capabilities():
+    return Capabilities()
