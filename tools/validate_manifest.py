@@ -47,18 +47,24 @@ def validate(data):
             raise ValueError("Unknown controls: " + ", ".join(sorted(unknown)))
 
 
+def load_manifest(path):
+    raw = path.read_text(encoding="utf-8")
+    if len(raw) > 100_000:
+        raise ValueError("Manifest exceeds size limit")
+    # Reject aliases/anchors to keep this simple data format bounded.
+    if any(isinstance(t, (yaml.tokens.AliasToken, yaml.tokens.AnchorToken)) for t in yaml.scan(raw)):
+        raise ValueError("YAML aliases and anchors are not supported")
+    data = yaml.load(raw, Loader=UniqueLoader)
+    validate(data)
+    return data
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("manifest", type=Path)
     args = parser.parse_args()
     try:
-        raw = args.manifest.read_text(encoding="utf-8")
-        if len(raw) > 100_000:
-            raise ValueError("Manifest exceeds size limit")
-        # Reject aliases/anchors to keep this simple data format bounded.
-        if any(isinstance(t, (yaml.tokens.AliasToken, yaml.tokens.AnchorToken)) for t in yaml.scan(raw)):
-            raise ValueError("YAML aliases and anchors are not supported")
-        validate(yaml.load(raw, Loader=UniqueLoader))
+        load_manifest(args.manifest)
     except (ValueError, OSError, yaml.YAMLError) as exc:
         print(f"INVALID: {exc}", file=sys.stderr)
         return 1
