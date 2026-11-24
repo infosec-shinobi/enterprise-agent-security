@@ -9,13 +9,14 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 - [x] Lab 01 manually completed by a Windows PowerShell user; other platforms and automation unverified.
 - [x] Initial architecture and 30-control catalog published.
 - [x] Lab 02 SPIRE bootstrap scaffold and Lab 03 OpenBao exercise published; execution unverified, SVID issuance and trust integration incomplete.
-- [ ] Playground, runner, evidence dashboard and remaining labs not implemented.
+- [x] Lab 01 automated lifecycle and persistent JSON evidence validated by a Windows PowerShell user.
+- [ ] Playground GUI, evidence dashboard and remaining labs not implemented.
 
 ## How we work
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: A05 — Validate evidence reports and CLI.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: A06 — Add regression tests.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -27,7 +28,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | Complete · A02 | Add Lab 01 manifest | 30m | A01 | Map existing scenarios to catalog IDs | All five gateway outcomes represented; IDs checked against catalog |
 | Complete · A03 | Build HTTP runner | 60–90m | A02 | Python runner with timeouts and token handling | Executes real HTTP requests; redacts tokens; distinguishes 401/403/503 |
 | Complete · A04 | Automate Lab 01 lifecycle | 60–90m | A03 | Setup, five assertions and cleanup | Fresh isolated state produces 403/403/200/403/403; repeatable |
-| In progress · A05 | Add evidence format and CLI | 45–60m | A04 | JSON results and CLI exit codes | Expected and actual status, timestamps, run ID and failure reason recorded |
+| Complete · A05 | Add evidence format and CLI | 45–60m | A04 | JSON results and CLI exit codes | Expected and actual status, timestamps, run ID and failure reason recorded |
 | Open · A06 | Add regression tests | 45–90m | A05 | Unit tests and opt-in Compose integration test | Unit tests pass; integration result recorded separately |
 
 ### B — Playground MVP
@@ -116,3 +117,4 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | A04 implementation | A04 | Disposable Compose orchestrator and registry error handling published; execution pending | Validate repeatability and cleanup |
 | A04 validation | A04 | User confirmed Windows validation: A03 unit tests pass, two complete five-assertion runs pass, unique project IDs, cleanup, original environment preservation and occupied-port protection pass | A05 |
 | A05 implementation | A05 | Versioned evidence schema, persistence, report CLI and unit tests published; execution pending | Validate success and blocked-run reports |
+| A05 validation | A05 | User confirmed all 12 checks: seven unit tests, successful run exit 0, JSON metadata and assertions/control mappings, cleanup success, CLI report, occupied-port exit 2 with five not_run scenarios, separate files and Git exclusion | A06 |
