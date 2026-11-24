@@ -1,0 +1,41 @@
+schema_version: 1
+id: lab-01
+title: Registry, identity, authorization and suspension
+description: Demonstrate registry-based admission, action authorization and suspension using a synthetic customer record and Keycloak client credentials.
+manual: README.md
+services:
+  - keycloak
+  - registry
+  - opa
+  - gateway
+scenarios:
+  - id: unregistered-read
+    title: Deny read by an unregistered agent
+    controls: [REG-01, AUTH-04]
+    action: lab-01-unregistered-read
+    expected:
+      http_status: 403
+  - id: draft-read
+    title: Deny read by a registered but unapproved agent
+    controls: [REG-04, AUTH-04]
+    action: lab-01-draft-read
+    expected:
+      http_status: 403
+  - id: active-read
+    title: Allow an active agent to read a synthetic record
+    controls: [AUTH-01, AUTH-02]
+    action: lab-01-active-read
+    expected:
+      http_status: 200
+  - id: active-delete
+    title: Deny an active agent unauthorized deletion
+    controls: [AUTH-01, AUTH-02, AUTH-04]
+    action: lab-01-active-delete
+    expected:
+      http_status: 403
+  - id: suspended-read
+    title: Deny read after suspension using the same valid token
+    controls: [IR-01]
+    action: lab-01-suspended-read
+    expected:
+      http_status: 403
