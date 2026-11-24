@@ -10,3 +10,10 @@ coverage/
 *.log
 data/
 secrets/
+
+# Local Python virtual environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
