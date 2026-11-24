@@ -11,6 +11,8 @@ import httpx
 import yaml
 from http_runner import HttpRunner, RunnerError
 from validate_manifest import ROOT, load_manifest
+import evidence
+from jsonschema import ValidationError
 
 REGISTRY = "http://localhost:8000"
 GATEWAY = "http://localhost:8001"
@@ -66,18 +68,26 @@ def ready(runner):
     raise RunnerError("Service readiness timed out")
 
 
-def run_scenarios(runner, manifest):
+def run_scenarios(runner, manifest, run):
     scenarios = manifest["scenarios"]
     expected_contract = [(s, "lab-01-" + s, status) for s, _, status in ORDER]
     if [(s["id"], s["action"], s["expected"]["http_status"]) for s in scenarios] != expected_contract:
         raise RunnerError("Unexpected Lab 01 scenario contract")
     require_state(runner.client, None)
-    for scenario, (_, state, _) in zip(scenarios, ORDER):
-        if state:
-            transition(runner.client, state)
-        elif scenario["id"] == "active-delete":
-            require_state(runner.client, "active")
-        result = runner.execute(scenario["action"], scenario["expected"]["http_status"])
+    for scenario, (_, state, _), entry in zip(scenarios, ORDER, run["scenarios"]):
+        entry["started_at"] = evidence.now()
+        try:
+            if state:
+                transition(runner.client, state)
+            elif scenario["id"] == "active-delete":
+                require_state(runner.client, "active")
+            result = runner.execute(scenario["action"], scenario["expected"]["http_status"])
+            entry.update(asdict(result))
+        except (RunnerError, httpx.HTTPError, ValueError, KeyboardInterrupt):
+            entry.update(outcome="error", reason="Scenario preparation or execution interrupted")
+            raise
+        finally:
+            entry["finished_at"] = evidence.now()
         print(json.dumps({"scenario": scenario["id"], **asdict(result)}), flush=True)
         if result.outcome != "pass":
             return 1 if result.outcome == "fail" else 2
@@ -86,11 +96,16 @@ def run_scenarios(runner, manifest):
 
 def main():
     argparse.ArgumentParser(description=__doc__).parse_args()
-    project = "eas-a04-" + uuid.uuid4().hex
+    run_id = uuid.uuid4().hex
+    project = "eas-a04-" + run_id
+    run = evidence.new_run(run_id, project)
+    clock = time.monotonic()
     started = False
     code = 2
     try:
-        manifest = load_manifest(ROOT / "labs/01-control-plane/manifest.yaml")
+        manifest_path = ROOT / "labs/01-control-plane/manifest.yaml"
+        manifest = load_manifest(manifest_path)
+        evidence.initialize(run, manifest, manifest_path)
         # Refuse occupied host ports before creating any resources; Compose
         # also enforces exclusive port bindings during startup.
         import socket
@@ -104,21 +119,35 @@ def main():
         compose(project, "up", "--build", "-d")
         with HttpRunner() as runner:
             ready(runner)
-            code = run_scenarios(runner, manifest)
+            code = run_scenarios(runner, manifest, run)
+            run["reason"] = {0:"All assertions passed",1:"Security assertion mismatch",2:"Scenario execution error"}[code]
     except RunnerError as exc:
+        run["reason"] = str(exc)
         print("ERROR: " + str(exc))
     except (httpx.HTTPError, ValueError, OSError, subprocess.SubprocessError, yaml.YAMLError):
-        print("ERROR: manifest, HTTP or Compose operation failed")
+        run["reason"] = "Manifest, HTTP or Compose operation failed"
+        print("ERROR: " + run["reason"])
     except KeyboardInterrupt:
+        run["reason"] = "Interrupted"
         print("Interrupted")
     finally:
         if started:
             try:
                 compose(project, "down", "-v", timeout=120)
+                run["cleanup"] = "success"
                 print("Cleanup complete: " + project)
             except (OSError, subprocess.SubprocessError, KeyboardInterrupt):
                 print("Cleanup failed; inspect project: " + project)
+                run["cleanup"] = "error"
+                run["reason"] = "Cleanup failed"
                 code = 2
+        evidence.finish(run, code, clock)
+        try:
+            target = evidence.save(run)
+            print("Evidence: " + str(target))
+        except (OSError, ValueError, ValidationError):
+            print("ERROR: evidence persistence failed")
+            code = 2
     return code
 
 
