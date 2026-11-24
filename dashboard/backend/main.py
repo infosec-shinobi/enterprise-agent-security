@@ -1,11 +1,15 @@
-"""Local read-only playground API. No lab execution in B01."""
+"""Local read-only playground API. No lab execution in B02."""
 from typing import Literal
 from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from dashboard.backend.labs import router
+
 app = FastAPI(title="Enterprise Agent Security Playground", version="0.1.0")
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "testserver"])
+
+app.include_router(router)
 
 class Health(BaseModel):
     status: Literal["ok"] = "ok"
@@ -17,7 +21,7 @@ def health():
     return Health()
 
 class Capabilities(BaseModel):
-    lab_discovery: bool = False
+    lab_discovery: bool = True
     service_health: bool = False
     execution: bool = False
     evidence: bool = False
