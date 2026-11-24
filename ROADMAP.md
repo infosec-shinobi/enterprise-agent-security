@@ -15,7 +15,7 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: A03 — Validate HTTP runner unit tests and live smoke test.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: A04 — Automate Lab 01 lifecycle.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -25,7 +25,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | --- | --- | --- | --- | --- | --- |
 | Complete · A01 | Define manifest schema | 30–45m | None | JSON Schema and example manifest | Valid manifest accepted; malformed manifest rejected |
 | Complete · A02 | Add Lab 01 manifest | 30m | A01 | Map existing scenarios to catalog IDs | All five gateway outcomes represented; IDs checked against catalog |
-| In progress · A03 | Build HTTP runner | 60–90m | A02 | Python runner with timeouts and token handling | Executes real HTTP requests; redacts tokens; distinguishes 401/403/503 |
+| Complete · A03 | Build HTTP runner | 60–90m | A02 | Python runner with timeouts and token handling | Executes real HTTP requests; redacts tokens; distinguishes 401/403/503 |
 | Open · A04 | Automate Lab 01 lifecycle | 60–90m | A03 | Setup, five assertions and cleanup | Fresh isolated state produces 403/403/200/403/403; repeatable |
 | Open · A05 | Add evidence format and CLI | 45–60m | A04 | JSON results and CLI exit codes | Expected and actual status, timestamps, run ID and failure reason recorded |
 | Open · A06 | Add regression tests | 45–90m | A05 | Unit tests and opt-in Compose integration test | Unit tests pass; integration result recorded separately |
@@ -112,3 +112,4 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | A02 implementation | A02 | Five ordered scenarios and catalog mappings published; local schema validation pending | Validate Lab 01 manifest |
 | A02 validation | A02 | User confirmed Lab 01 manifest VALID, exit 0, on Windows PowerShell; live execution not tested | A03 |
 | A03 implementation | A03 | HTTP runner, smoke CLI, unit tests and instructions published; execution pending | Run tests and live smoke |
+| A03 validation | A03 | User confirmed unit tests passed and live Windows PowerShell unregistered-read returned expected 403, actual 403, pass, exit 0; full lifecycle and other platforms untested | A04 |
