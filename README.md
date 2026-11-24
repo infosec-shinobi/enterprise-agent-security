@@ -61,7 +61,7 @@ flowchart TB
 - `docs/labs/` — lab progression and validation requirements
 - `labs/` — Lab 01 user-validated on Windows; [Lab 02 SPIRE](labs/02-spiffe-spire/README.md) experimental scaffold; [Lab 03 OpenBao](labs/03-openbao/README.md) unverified exercise
 - `infrastructure/` — Docker Compose configuration and lab integrations
-- `dashboard/` — interactive playground, live lab execution and evidence scorecard (planned)
+- `dashboard/` — [local playground scaffold and startup instructions](dashboard/README.md); live execution and evidence scorecard planned
 
 ## First milestone
 
