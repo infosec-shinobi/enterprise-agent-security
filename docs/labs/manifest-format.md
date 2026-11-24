@@ -36,4 +36,4 @@ PowerShell: `Remove-Item -Recurse -Force .venv` (from repository root).
 
 ## Status
 
-A01 implementation published; local execution validation pending. A02 will add the actual Lab 01 manifest.
+A01 complete: user confirmed both fixtures behaved as expected on Windows PowerShell (valid accepted; invalid HTTP status string rejected with exit code 1). Linux/macOS and additional negative cases remain untested. A02 will add the actual Lab 01 manifest.
