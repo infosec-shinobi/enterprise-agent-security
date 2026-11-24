@@ -15,7 +15,7 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: A01 — Define manifest schema.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: A01 — Run manifest validation fixtures locally, then proceed to A02.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -23,7 +23,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 
 | Status / ID | Task | Timebox | Depends on | Deliverable | Acceptance criteria |
 | --- | --- | --- | --- | --- | --- |
-| Open · A01 | Define manifest schema | 30–45m | None | JSON Schema and example manifest | Valid manifest accepted; malformed manifest rejected |
+| In progress · A01 | Define manifest schema | 30–45m | None | JSON Schema and example manifest | Valid manifest accepted; malformed manifest rejected |
 | Open · A02 | Add Lab 01 manifest | 30m | A01 | Map existing scenarios to catalog IDs | All five gateway outcomes represented; IDs checked against catalog |
 | Open · A03 | Build HTTP runner | 60–90m | A02 | Python runner with timeouts and token handling | Executes real HTTP requests; redacts tokens; distinguishes 401/403/503 |
 | Open · A04 | Automate Lab 01 lifecycle | 60–90m | A03 | Setup, five assertions and cleanup | Fresh isolated state produces 403/403/200/403/403; repeatable |
@@ -106,3 +106,5 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | Session | Work ID | Outcome | Next action |
 | --- | --- | --- | --- |
 | Roadmap revision | Planning | Playground direction and backlog established | A01 |
+
+| A01 implementation | A01 | Schema, validator, fixtures and instructions published; execution pending | Validate both fixtures locally |
