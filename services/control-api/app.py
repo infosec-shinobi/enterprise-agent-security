@@ -75,6 +75,8 @@ async def tool(record_id: str, request: Request, authorization: str | None = Hea
     try:
         async with httpx.AsyncClient(timeout=3.0) as client:
             r = await client.get(f'{os.environ["REGISTRY_URL"]}/internal/agents/{agent_id}')
+            if r.status_code != 404:
+                r.raise_for_status()
             registered = r.status_code == 200
             lifecycle = r.json()["lifecycle"] if registered else "unknown"
             decision = await client.post(os.environ["OPA_URL"], json={"input":{"identity_valid":True,"registered":registered,"lifecycle":lifecycle,"action":action,"resource":"synthetic-customer-records"}})
