@@ -4,6 +4,8 @@ Local development shell; no lab execution, service probes, framework mappings or
 
 ## Architecture
 
+See [ADR-001 — Playground application technology stack](../docs/adr/ADR-001-playground-application-stack.md) for the decision, alternatives and tradeoffs.
+
 Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. Future backend modules will discover manifests via existing validators (B02), probe services (B03), invoke trusted host runner with a single-run lock (B04), stream events (B05), and read validated evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
 
 ## Prerequisites
