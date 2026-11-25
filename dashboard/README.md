@@ -1,12 +1,12 @@
-# Playground — B02
+# Playground — B03
 
-Local development shell with B02 read-only manifest discovery; no lab execution, service probes, framework mappings or evidence ingestion yet. React/TypeScript/Vite on 127.0.0.1:5173 proxies /api to FastAPI on 127.0.0.1:8090. No Docker socket, CORS wildcard, arbitrary command endpoint or external listener. TrustedHost middleware is defense in depth, not authentication. Do not expose either development server to a network. Existing lab ports 8000/8001/8081 are unchanged.
+Local development shell with B02 read-only manifest discovery; B03 host-side service probes; no lab execution, framework mappings or evidence ingestion yet. React/TypeScript/Vite on 127.0.0.1:5173 proxies /api to FastAPI on 127.0.0.1:8090. No Docker socket, CORS wildcard, arbitrary command endpoint or external listener. TrustedHost middleware is defense in depth, not authentication. Do not expose either development server to a network. Existing lab ports 8000/8001/8081 are unchanged.
 
 ## Architecture
 
 See [ADR-001 — Playground application technology stack](../docs/adr/ADR-001-playground-application-stack.md) for the decision, alternatives and tradeoffs.
 
-Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. The B02 backend discovers manifests via existing validators. Future modules will probe services (B03), invoke trusted host runner with a single-run lock (B04), stream events (B05), and read validated evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
+Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. The B02 backend discovers manifests via existing validators. B03 probes allowlisted services. Future modules will invoke trusted host runner with a single-run lock (B04), stream events (B05), and read validated evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
 
 ## Prerequisites
 
@@ -82,3 +82,21 @@ Remove-Item labs/b02-discovery-test
 ```
 
 Refresh and verify only Lab 01 remains.
+
+## B03 — Service observations
+
+See [ADR-003](../docs/adr/ADR-003-bounded-service-observations.md). GET /api/v1/services and GET /api/v1/services/{service_id} return point-in-time observations. No Docker socket or Compose changes. Unknown or failed observations do not establish container state. Control effectiveness always not_assessed.
+
+From repository root with prior servers stopped and changes pulled:
+
+PowerShell:
+```powershell
+.\.venv\Scripts\python.exe -m unittest dashboard.backend.test_api dashboard.backend.test_labs dashboard.backend.test_services -v
+```
+
+Bash:
+```bash
+.venv/bin/python -m unittest dashboard.backend.test_api dashboard.backend.test_labs dashboard.backend.test_services -v
+```
+
+Expect 24 tests (optional symlink skip). Start dashboard using commands above, build frontend and visit Services. With no lab running, four host endpoints should be unavailable and three internal services unknown, assuming ports are unoccupied. Start Lab 01 using docker compose up -d --build; wait for startup. Refresh Services: registry, gateway and Keycloak available; OPA and SPIRE unknown. OpenBao depends on whether optional overlay is running. Stop only gateway using docker compose stop gateway, refresh, then restore using docker compose start gateway. Stop OPA briefly only in a dedicated idle lab, refresh: gateway endpoint may still be available and OPA unknown. Restore using docker compose start opa. Do not infer enforcement from this view. Stop dashboard API, verify error, restart and refresh. Restore original lab state (docker compose stop only if you started the lab for this test; no volume deletion). Run original tools regression with integration opt-in unset. B03 validation pending.
