@@ -12,13 +12,14 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 - [x] Lab 01 automated lifecycle and persistent JSON evidence validated by a Windows PowerShell user.
 - [x] Playground shell and API validated by a Windows PowerShell user.
 - [x] Read-only manifest discovery and dynamic lab cards validated on Windows.
+- [x] Host-side service observations validated on Windows, including optional OpenBao.
 - [ ] Execution UI, evidence dashboard and remaining labs not implemented.
 
 ## How we work
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: B03 — Validate service health view.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: B04 — Run Lab 01 from UI.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -39,7 +40,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | --- | --- | --- | --- | --- | --- |
 | Complete · B01 | Scaffold dashboard and API | 60–90m | A01 | React/TypeScript and FastAPI skeleton | Local UI loads and API health endpoint responds |
 | Complete · B02 | Discover lab manifests | 45m | A02,B01 | Read-only lab catalog endpoint and cards | Lab 01 appears without hardcoded frontend metadata |
-| In progress · B03 | Service health view | 45–60m | B01 | Bounded probes and health cards | Running, unavailable and unknown states distinguished |
+| Complete · B03 | Service health view | 45–60m | B01 | Bounded probes and health cards | Running, unavailable and unknown states distinguished |
 | Open · B04 | Run Lab 01 from UI | 60–90m | A05,B02 | Run endpoint and single-run lock | Click starts real runner; duplicate run rejected |
 | Open · B05 | Stream run events | 60–90m | B04 | SSE endpoint and timeline | Ordered real events appear; disconnect/reconnect supported |
 | Open · B06 | Show results and manual mode | 45–60m | B05 | Expected/actual results and manual instructions | UI displays pass/fail/error and links Bash/PowerShell guide |
@@ -106,6 +107,18 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 
 Start G01/G02 alongside or after the GUI MVP; do not block B01. Pin published framework versions and review revisions separately. NIST AI RMF is a risk outcomes framework, not a technical certification checklist. See https://www.nist.gov/itl/ai-risk-management-framework and https://airc.nist.gov/airmf-resources/playbook/.
 
+### H — Full infrastructure observability and pluggable model gateways
+
+| Status / ID | Task | Timebox | Depends on | Deliverable | Acceptance criteria |
+| --- | --- | --- | --- | --- | --- |
+| Open · H01 | Define multi-method monitoring contract | 45–60m | B03 | Probe adapters, deployment state and coverage inventory | Every deployed service has an explicit observation strategy; disabled, unknown, stale and unavailable distinguished |
+| Open · H02 | Monitor internal services | 60–90m | H01,B07,D01 | Restricted internal collector and native health adapters | OPA and SPIRE server/agent observed without publishing ports or unrestricted Docker socket; outage/recovery tested |
+| Open · H03 | Define model gateway provider contract | 45–60m | B03 | ADR, validated local configuration and capability matrix | none, LiteLLM and Bifrost selectable; provider-specific differences explicit; no LLM required for core labs |
+| Open · H04 | Implement LiteLLM and Bifrost profiles | 60–90m per provider | H03,B07 | Pinned optional Compose profiles, adapters and synthetic upstream | Each provider independently validated; health, routing, authorization and telemetry assertions separated; secrets excluded from evidence |
+| Open · H05 | Integrate monitoring coverage and gateway selection | 60–90m | H02,H04,C07 | UI coverage, selected provider and observed deployment state | Safe allowlisted selection and explicit restart/apply workflow; no arbitrary targets; all enabled services have tested probes |
+
+H01 and H03 may be designed alongside MVP work. Coordinate H02 with B07 packaging and D01; integrate monitoring for every new service as it is introduced. H04/H05 do not block core no-LLM labs. Provider endpoint and capability details must be verified against pinned releases before implementation. No permanent unknown-by-design state for enabled supported services; transient unknown remains valid.
+
 ## Definition of done
 
 - Small reviewable commit; documentation and relevant tests updated.
@@ -142,3 +155,5 @@ Start G01/G02 alongside or after the GUI MVP; do not block B01. Pin published fr
 | B02 implementation | B02 | Read-only discovery, typed catalog routes, dynamic cards and ADR published; validation pending | Validate discovery and regression suite |
 | B02 validation | B02 | Windows user confirmed backend and original regression suites, API contracts, frontend build, details, themes, dynamic discovery and removal, duplicate-ID exclusion and diagnostics, and API failure/recovery. PowerShell CRLF fixture instructions corrected; exact symlink skip count not reported. | B03 |
 | B03 implementation | B03 | Read-only allowlisted host probes, typed API, service cards and ADR published; validation pending | Validate offline tests and live service states |
+| B03 validation | B03 | Windows user confirmed all 18 acceptance checks and optional live OpenBao test; exact symlink skip count not reported. | B04 |
+| Monitoring and gateway planning | H01–H05 | User requested full infrastructure monitoring and configurable LiteLLM/Bifrost; added follow-up work packages, implementation pending | B04 remains next |
