@@ -12,11 +12,11 @@ class ApiTests(unittest.TestCase):
         with TestClient(app) as client:
             response = client.get("/api/v1/capabilities")
             self.assertEqual(response.status_code,200)
-            self.assertEqual(response.json(),dict(lab_discovery=True,service_health=True,execution=False,evidence=False,framework_mapping=False))
+            self.assertEqual(response.json(),dict(lab_discovery=True,service_health=True,execution=True,evidence=False,framework_mapping=False))
 
-    def test_no_execution(self):
+    def test_no_arbitrary_execution(self):
         with TestClient(app) as client:
-            self.assertEqual(client.post("/api/v1/runs").status_code,404)
+            self.assertEqual(client.post("/api/v1/runs",json={"lab_id":"lab-01","command":"invalid"}).status_code,422)
 
     def test_untrusted_host(self):
         with TestClient(app) as client:
