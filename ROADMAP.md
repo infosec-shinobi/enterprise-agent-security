@@ -18,7 +18,7 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: B03 — Service health view.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: B03 — Validate service health view.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -39,7 +39,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | --- | --- | --- | --- | --- | --- |
 | Complete · B01 | Scaffold dashboard and API | 60–90m | A01 | React/TypeScript and FastAPI skeleton | Local UI loads and API health endpoint responds |
 | Complete · B02 | Discover lab manifests | 45m | A02,B01 | Read-only lab catalog endpoint and cards | Lab 01 appears without hardcoded frontend metadata |
-| Open · B03 | Service health view | 45–60m | B01 | Bounded probes and health cards | Running, unavailable and unknown states distinguished |
+| In progress · B03 | Service health view | 45–60m | B01 | Bounded probes and health cards | Running, unavailable and unknown states distinguished |
 | Open · B04 | Run Lab 01 from UI | 60–90m | A05,B02 | Run endpoint and single-run lock | Click starts real runner; duplicate run rejected |
 | Open · B05 | Stream run events | 60–90m | B04 | SSE endpoint and timeline | Ordered real events appear; disconnect/reconnect supported |
 | Open · B06 | Show results and manual mode | 45–60m | B05 | Expected/actual results and manual instructions | UI displays pass/fail/error and links Bash/PowerShell guide |
@@ -141,3 +141,4 @@ Start G01/G02 alongside or after the GUI MVP; do not block B01. Pin published fr
 | B01 validation | B01 | User confirmed all 14 acceptance checks: four API tests, frontend build, eight navigation destinations, theme persistence, connectivity failure/recovery and existing regression suite pass | B02 |
 | B02 implementation | B02 | Read-only discovery, typed catalog routes, dynamic cards and ADR published; validation pending | Validate discovery and regression suite |
 | B02 validation | B02 | Windows user confirmed backend and original regression suites, API contracts, frontend build, details, themes, dynamic discovery and removal, duplicate-ID exclusion and diagnostics, and API failure/recovery. PowerShell CRLF fixture instructions corrected; exact symlink skip count not reported. | B03 |
+| B03 implementation | B03 | Read-only allowlisted host probes, typed API, service cards and ADR published; validation pending | Validate offline tests and live service states |
