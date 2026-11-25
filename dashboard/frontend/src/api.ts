@@ -42,3 +42,23 @@ export async function getServices(signal:AbortSignal):Promise<ServiceObservation
  if(!obj(v)||!Array.isArray(v.services)||!v.services.every(observation))throw new Error('Invalid service response');
  return v.services;
 }
+
+export type Run={run_id:string;lab_id:string;project:string;status:'running'|'pass'|'fail'|'error';started_at:string;finished_at:string|null;exit_code:number|null;evidence_path:string|null;reason:string;recovery_required:boolean};
+export type RunSnapshot={supported_labs:string[];blocked:boolean;latest:Run|null};
+const nullableString=(v:unknown)=>v===null||typeof v==='string';
+const run=(v:unknown):v is Run=>obj(v)&&fields(v,['run_id','lab_id','project','started_at','reason'])&&(v.status==='running'||v.status==='pass'||v.status==='fail'||v.status==='error')&&nullableString(v.finished_at)&&nullableString(v.evidence_path)&&(v.exit_code===null||typeof v.exit_code==='number')&&typeof v.recovery_required==='boolean';
+export async function getRuns(signal:AbortSignal):Promise<RunSnapshot>{
+ const r=await fetch('/api/v1/runs',{signal,cache:'no-store'});
+ if(!r.ok)throw new Error('Run status unavailable');
+ const v:unknown=await r.json();
+ if(!obj(v)||!strings(v.supported_labs)||typeof v.blocked!=='boolean'||!(v.latest===null||run(v.latest)))throw new Error('Invalid run status');
+ return {supported_labs:v.supported_labs,blocked:v.blocked,latest:v.latest};
+}
+export async function startRun(lab_id:string,signal:AbortSignal):Promise<Run>{
+ const r=await fetch('/api/v1/runs',{method:'POST',headers:{'Content-Type':'application/json','X-EAS-Action':'start-run'},body:JSON.stringify({lab_id}),signal});
+ if(r.status===409)throw new Error('Run active or recovery required');
+ if(r.status!==202)throw new Error('Start request rejected or unavailable');
+ const v:unknown=await r.json();
+ if(!run(v))throw new Error('Invalid start response');
+ return v;
+}
