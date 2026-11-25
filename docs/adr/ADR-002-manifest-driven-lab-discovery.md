@@ -1,6 +1,6 @@
 # ADR-002 — Manifest-driven lab discovery
 
-Status: Accepted for B02 implementation; validation pending.
+Status: Accepted; B02 validated on Windows.
 
 ## Context
 Lab 01 has a validated v1 YAML manifest and canonical control IDs. Labs 02/03 have manual scaffolds but discovery requires a valid manifest. A hardcoded frontend catalog would drift from the runnable definitions.
@@ -13,3 +13,6 @@ Hardcoded UI lists are simpler initially but duplicate metadata. A database inde
 
 ## Consequences
 New valid manifests appear on refresh without frontend changes. Invalid manifests remain visible as diagnostics; missing manifests are intentionally absent. Local repository files are trusted administrative inputs, not a hostile upload interface; filesystem checks are not race-proof against a concurrent local writer. No caching or file watcher yet. A valid manifest does not establish runner support, service availability, actual control effectiveness or framework compliance. Future mappings retain canonical IDs; execution must separately enforce trusted adapters.
+
+## Validation
+User confirmed dynamic discovery and removal without frontend changes, duplicate-ID exclusion and diagnostics, API and UI failure/recovery, backend regression tests and frontend build. No application changes were needed for the Windows CRLF fixture issue. Linux/macOS validation remains outstanding.
