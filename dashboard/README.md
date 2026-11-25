@@ -1,4 +1,4 @@
-# Playground — B01
+# Playground — B02
 
 Local development shell with B02 read-only manifest discovery; no lab execution, service probes, framework mappings or evidence ingestion yet. React/TypeScript/Vite on 127.0.0.1:5173 proxies /api to FastAPI on 127.0.0.1:8090. No Docker socket, CORS wildcard, arbitrary command endpoint or external listener. TrustedHost middleware is defense in depth, not authentication. Do not expose either development server to a network. Existing lab ports 8000/8001/8081 are unchanged.
 
@@ -6,7 +6,7 @@ Local development shell with B02 read-only manifest discovery; no lab execution,
 
 See [ADR-001 — Playground application technology stack](../docs/adr/ADR-001-playground-application-stack.md) for the decision, alternatives and tradeoffs.
 
-Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. Future backend modules will discover manifests via existing validators (B02), probe services (B03), invoke trusted host runner with a single-run lock (B04), stream events (B05), and read validated evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
+Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. The B02 backend discovers manifests via existing validators. Future modules will probe services (B03), invoke trusted host runner with a single-run lock (B04), stream events (B05), and read validated evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
 
 ## Prerequisites
 
@@ -60,4 +60,25 @@ Bash:
 .venv/bin/python -m unittest dashboard.backend.test_api dashboard.backend.test_labs -v
 ```
 
-Expected 12 tests, all pass or one symlink test skipped if OS permissions prohibit creating links. Restart API and rerun npm run build / npm run dev. Open Labs, verify Lab 01 shows five scenarios, six mapped controls and four required services. Expand both detail panels. Stop backend and refresh labs to verify error state; restart and retry. Re-run existing 23-test discovery with integration disabled. B02 validation pending. No new frontend dependencies.
+Expected 12 tests, all pass or one symlink test skipped if OS permissions prohibit creating links. Restart API and rerun npm run build / npm run dev. Open Labs, verify Lab 01 shows five scenarios, six mapped controls and four required services. Expand both detail panels. Stop backend and refresh labs to verify error state; restart and retry. Re-run existing 23-test discovery with integration disabled. B02 validated by user on Windows: backend and original regression suites, API endpoints, frontend build, scenario/control details, themes, dynamic discovery and removal, duplicate-ID exclusion and diagnostics, and API failure/recovery all passed. Exact symlink skip count not reported. No new frontend dependencies.
+
+### Optional manual discovery fixture (PowerShell)
+
+From the repository root, use a new temporary directory (do not reuse an existing directory):
+
+```powershell
+New-Item -ItemType Directory labs/b02-discovery-test -ErrorAction Stop
+Copy-Item labs/01-control-plane/README.md labs/b02-discovery-test/README.md
+(Get-Content labs/01-control-plane/manifest.yaml -Raw) -replace '(?m)^id: lab-01\r?$', 'id: lab-99' | Set-Content labs/b02-discovery-test/manifest.yaml -Encoding UTF8
+Select-String -Path labs/b02-discovery-test/manifest.yaml -Pattern '^id:'
+```
+
+Verify lab-99, refresh Labs and expect both cards. The optional carriage return handles Windows CRLF. Duplicate IDs instead exclude both entries; this behavior was manually validated. Remove the fixture after testing:
+
+```powershell
+Remove-Item labs/b02-discovery-test/README.md
+Remove-Item labs/b02-discovery-test/manifest.yaml
+Remove-Item labs/b02-discovery-test
+```
+
+Refresh and verify only Lab 01 remains.
