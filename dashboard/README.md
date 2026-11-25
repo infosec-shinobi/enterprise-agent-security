@@ -1,12 +1,12 @@
-# Playground — B03
+# Playground — B04
 
-Local development shell with B02 read-only manifest discovery; B03 host-side service probes; no lab execution, framework mappings or evidence ingestion yet. React/TypeScript/Vite on 127.0.0.1:5173 proxies /api to FastAPI on 127.0.0.1:8090. No Docker socket, CORS wildcard, arbitrary command endpoint or external listener. TrustedHost middleware is defense in depth, not authentication. Do not expose either development server to a network. Existing lab ports 8000/8001/8081 are unchanged.
+Local development shell with B02 read-only manifest discovery; B03 host-side service probes; B04 allowlisted Lab 01 execution; no framework mappings or historical evidence ingestion yet. React/TypeScript/Vite on 127.0.0.1:5173 proxies /api to FastAPI on 127.0.0.1:8090. No Docker socket, CORS wildcard, arbitrary command endpoint or external listener. TrustedHost middleware is defense in depth, not authentication. Do not expose either development server to a network. Existing lab ports 8000/8001/8081 are unchanged.
 
 ## Architecture
 
 See [ADR-001 — Playground application technology stack](../docs/adr/ADR-001-playground-application-stack.md) for the decision, alternatives and tradeoffs.
 
-Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. The B02 backend discovers manifests via existing validators. B03 probes allowlisted services. Future modules will invoke trusted host runner with a single-run lock (B04), stream events (B05), and read validated evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
+Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. The B02 backend discovers manifests via existing validators. B03 probes allowlisted services. B04 invokes the trusted host runner with a persistent dashboard lock. Future modules stream events (B05) and display detailed evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
 
 ## Prerequisites
 
@@ -104,3 +104,24 @@ Expect 24 tests (optional symlink skip). Start dashboard using commands above, b
 ### Planned monitoring expansion
 
 See roadmap H01–H05 for internal OPA/SPIRE observations, per-service coverage, and optional LiteLLM/Bifrost model gateway profiles. B03 unknown states remain accurate until those probes are implemented. No provider or collector implementation is included in B03.
+
+## B04 — Trusted execution
+
+See [ADR-004](../docs/adr/ADR-004-trusted-runner-execution.md). Start the API as a single worker without reload, using the existing virtual environment. Run the application tests:
+
+PowerShell:
+```powershell
+.\.venv\Scripts\python.exe -m unittest dashboard.backend.test_api dashboard.backend.test_labs dashboard.backend.test_services dashboard.backend.test_runs -v
+```
+Bash:
+```bash
+.venv/bin/python -m unittest dashboard.backend.test_api dashboard.backend.test_labs dashboard.backend.test_services dashboard.backend.test_runs -v
+```
+
+Expect 33 tests, optional symlink skip. Build and start frontend. Ensure local Docker context and ports 8000/8001/8081 free, no concurrent CLI or Compose operations. Stop existing Lab 01 services only if safe; do not delete volumes. Open Runs, click Run Lab 01 and confirm. Observe running then pass, exit 0, evidence path. Refresh or navigate away and back during execution; run continues. Verify duplicate POST returns 409 while active. Verify evidence using existing report CLI and scoped project resource checks. Repeat with a new run ID. Start existing Lab 01 manually, then submit a run: expect error exit 2, evidence with not_required cleanup and occupied-port reason; original environment preserved. Restore original state. Run original tools regression. B04 validation pending.
+
+API POST /api/v1/runs accepts only JSON {"lab_id":"lab-01"} with Origin http://127.0.0.1:5173 and X-EAS-Action: start-run (other exact local development origins in ADR implementation). GET /api/v1/runs returns latest and lock state; GET /api/v1/runs/{id} returns latest matching ID. No raw logs or cancellation. Browser disconnect does not cancel. Latest status is not durable; evidence is.
+
+### Recovery (only if lock persists)
+
+Do not delete data/dashboard-run.lock while any runner or Compose operation is active. Stop the dashboard after verifying the worker is no longer active, inspect the marker for the exact project and confirm local Docker context. Check runner/Compose processes and Docker resources. If uncertain, leave the lock in place. Only after confirming no in-flight operations remain, use docker compose -f compose.yaml -p <recorded-project> down -v for that exact disposable eas-a04-UUID project (never default project). Verify no matching containers, volumes or networks remain. Then remove only data/dashboard-run.lock and restart dashboard. Do not automatically retry or delete evidence. Forced termination may leave descendants; this is manual recovery, not a cleanup guarantee.
