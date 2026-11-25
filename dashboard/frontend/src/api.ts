@@ -25,3 +25,20 @@ export async function getLabs(signal:AbortSignal):Promise<Catalog>{
  if(!obj(v)||!Array.isArray(v.labs)||!v.labs.every(lab)||!Array.isArray(v.issues)||!v.issues.every(i=>obj(i)&&fields(i,['directory','reason'])))throw new Error('Invalid catalog response');
  return {labs:v.labs,issues:v.issues};
 }
+
+export type ServiceObservation={id:string;name:string;role:string;endpoint:string|null;status:'available'|'unavailable'|'unknown';reason:string;checked_at:string;duration_ms:number|null;http_status:number|null;control_effectiveness:'not_assessed'};
+const nullableInt=(v:unknown)=>v===null||(typeof v==='number'&&Number.isInteger(v)&&v>=0);
+const observation=(v:unknown):v is ServiceObservation=>obj(v)&&fields(v,['id','name','role','reason','checked_at'])&&(v.endpoint===null||typeof v.endpoint==='string')&&(v.status==='available'||v.status==='unavailable'||v.status==='unknown')&&nullableInt(v.duration_ms)&&nullableInt(v.http_status)&&v.control_effectiveness==='not_assessed'&&typeof v.checked_at==='string'&&Number.isFinite(Date.parse(v.checked_at));
+export async function getServices(signal:AbortSignal):Promise<ServiceObservation[]>{
+ let response=await fetch('/api/v1/services',{signal,cache:'no-store'});
+ // A prior request can still be finishing after React development remount.
+ if(response.status===429){
+  await new Promise<void>(resolve=>window.setTimeout(resolve,3200));
+  signal.throwIfAborted();
+  response=await fetch('/api/v1/services',{signal,cache:'no-store'});
+ }
+ if(!response.ok)throw new Error('Service observations unavailable');
+ const v:unknown=await response.json();
+ if(!obj(v)||!Array.isArray(v.services)||!v.services.every(observation))throw new Error('Invalid service response');
+ return v.services;
+}
