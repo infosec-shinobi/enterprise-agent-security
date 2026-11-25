@@ -12,7 +12,7 @@ class ApiTests(unittest.TestCase):
         with TestClient(app) as client:
             response = client.get("/api/v1/capabilities")
             self.assertEqual(response.status_code,200)
-            self.assertEqual(response.json(),dict(lab_discovery=True,service_health=False,execution=False,evidence=False,framework_mapping=False))
+            self.assertEqual(response.json(),dict(lab_discovery=True,service_health=True,execution=False,evidence=False,framework_mapping=False))
 
     def test_no_execution(self):
         with TestClient(app) as client:
