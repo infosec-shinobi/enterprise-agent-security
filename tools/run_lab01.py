@@ -3,6 +3,7 @@ import argparse
 from dataclasses import asdict
 import json
 import os
+import re
 import subprocess
 import time
 import uuid
@@ -95,8 +96,14 @@ def run_scenarios(runner, manifest, run):
 
 
 def main():
-    argparse.ArgumentParser(description=__doc__).parse_args()
-    run_id = uuid.uuid4().hex
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run-id", help="Optional preallocated dashboard run UUID")
+    args = parser.parse_args()
+    if args.run_id is not None and not re.fullmatch(r"[0-9a-f]{32}", args.run_id):
+        parser.error("Invalid run ID")
+    run_id = args.run_id or uuid.uuid4().hex
+    if (evidence.OUTPUT / (run_id + ".json")).exists():
+        parser.error("Run evidence already exists")
     project = "eas-a04-" + run_id
     run = evidence.new_run(run_id, project)
     clock = time.monotonic()
@@ -122,12 +129,15 @@ def main():
             code = run_scenarios(runner, manifest, run)
             run["reason"] = {0:"All assertions passed",1:"Security assertion mismatch",2:"Scenario execution error"}[code]
     except RunnerError as exc:
+        code = 2
         run["reason"] = str(exc)
         print("ERROR: " + str(exc))
     except (httpx.HTTPError, ValueError, OSError, subprocess.SubprocessError, yaml.YAMLError):
+        code = 2
         run["reason"] = "Manifest, HTTP or Compose operation failed"
         print("ERROR: " + run["reason"])
     except KeyboardInterrupt:
+        code = 2
         run["reason"] = "Interrupted"
         print("Interrupted")
     finally:
