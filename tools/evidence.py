@@ -7,7 +7,10 @@ from pathlib import Path
 import tempfile
 import time
 from jsonschema import Draft202012Validator, FormatChecker
-from validate_manifest import ROOT
+if __package__:
+    from .validate_manifest import ROOT
+else:
+    from validate_manifest import ROOT
 
 SCHEMA = ROOT / "schemas/run-evidence.schema.json"
 OUTPUT = ROOT / "data" / "evidence"
