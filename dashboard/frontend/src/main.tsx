@@ -33,7 +33,7 @@ function App(){
  },[attempt]);
  const selected=pages.find(p=>p[0]===page)!;
  return <div className="shell">
-  <aside><div className="brand"><span className="mark">EAS</span><div>Enterprise Agent<br/>Security</div></div><small>PLAYGROUND / LOCAL</small><nav aria-label="Main navigation">{pages.map(p=><button key={p[0]} aria-current={page===p[0]?'page':undefined} onClick={()=>setPage(p[0])}>{p[0]}</button>)}</nav><div className="foot">Development build · B04</div></aside>
+  <aside><div className="brand"><span className="mark">EAS</span><div>Enterprise Agent<br/>Security</div></div><small>PLAYGROUND / LOCAL</small><nav aria-label="Main navigation">{pages.map(p=><button key={p[0]} aria-current={page===p[0]?'page':undefined} onClick={()=>setPage(p[0])}>{p[0]}</button>)}</nav><div className="foot">Development build · B05</div></aside>
   <main><header><span>Workspace / {page}</span><button onClick={()=>setDark(!dark)}>{dark?'Light mode':'Dark mode'}</button></header>
   <section className="intro"><small>SECURITY ENGINEERING WORKSPACE</small><h1>{page==='Overview'?'Agent Security Playground':page}</h1><p>{selected[2]}</p></section>
   <div className="status"><div><small>PLAYGROUND API</small><strong role="status" className={status}>{status==='connected'?'Connected':status==='checking'?'Checking…':'Unavailable'}</strong><p>API connectivity only; lab services are not checked.</p></div><button onClick={()=>setAttempt(a=>a+1)}>Refresh</button></div>
