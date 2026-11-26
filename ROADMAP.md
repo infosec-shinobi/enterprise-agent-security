@@ -2,7 +2,7 @@
 
 ## Vision
 
-An interactive, local-first enterprise agent security playground with a vendor-neutral lifecycle framework, control catalog and ten hands-on labs. Three modes: manual (Bash and Windows PowerShell 5.1/7+), autopilot (real automated tests), and sandbox (controlled security experiments). No LLM required for core labs.
+An interactive, local-first enterprise agent security playground with a vendor-neutral lifecycle framework, control catalog and ten hands-on labs. Four learning modes: manual (guided Bash and Windows PowerShell 5.1/7+ exercises), autopilot (real automated tests), sandbox (controlled security experiments), and Free Lab (persistent, independently configurable infrastructure for open-ended experimentation). No LLM required for core labs.
 
 ## Current baseline
 
@@ -13,13 +13,14 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 - [x] Playground shell and API validated by a Windows PowerShell user.
 - [x] Read-only manifest discovery and dynamic lab cards validated on Windows.
 - [x] Host-side service observations validated on Windows, including optional OpenBao.
-- [ ] Execution UI, evidence dashboard and remaining labs not implemented.
+- [x] Lab 01 trusted execution UI validated by user (B04).
+- [ ] Live events, detailed evidence dashboard, Free Lab and remaining labs not implemented.
 
 ## How we work
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: B04 — Validate trusted runner execution.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: B05 — Stream run events.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -41,7 +42,7 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | Complete · B01 | Scaffold dashboard and API | 60–90m | A01 | React/TypeScript and FastAPI skeleton | Local UI loads and API health endpoint responds |
 | Complete · B02 | Discover lab manifests | 45m | A02,B01 | Read-only lab catalog endpoint and cards | Lab 01 appears without hardcoded frontend metadata |
 | Complete · B03 | Service health view | 45–60m | B01 | Bounded probes and health cards | Running, unavailable and unknown states distinguished |
-| In progress · B04 | Run Lab 01 from UI | 60–90m | A05,B02 | Run endpoint and single-run lock | Click starts real runner; duplicate run rejected |
+| Complete · B04 | Run Lab 01 from UI | 60–90m | A05,B02 | Run endpoint and single-run lock | Click starts real runner; duplicate run rejected |
 | Open · B05 | Stream run events | 60–90m | B04 | SSE endpoint and timeline | Ordered real events appear; disconnect/reconnect supported |
 | Open · B06 | Show results and manual mode | 45–60m | B05 | Expected/actual results and manual instructions | UI displays pass/fail/error and links Bash/PowerShell guide |
 | Open · B07 | Package MVP | 45–90m | B06 | Compose profile and startup docs | Localhost-only startup; Windows and Bash walkthroughs |
@@ -119,6 +120,26 @@ Start G01/G02 alongside or after the GUI MVP; do not block B01. Pin published fr
 
 H01 and H03 may be designed alongside MVP work. Coordinate H02 with B07 packaging and D01; integrate monitoring for every new service as it is introduced. H04/H05 do not block core no-LLM labs. Provider endpoint and capability details must be verified against pinned releases before implementation. No permanent unknown-by-design state for enabled supported services; transient unknown remains valid.
 
+### I — Free Lab and custom experimentation
+
+| Status / ID | Task | Timebox | Depends on | Deliverable | Acceptance criteria |
+| --- | --- | --- | --- | --- | --- |
+| Open · I01 | Define Free Lab architecture and isolation | 45–60m | B04,H01 | Environment lifecycle and isolation ADR | Persistent experiments distinct from disposable runs; port conflicts, trust boundaries, ownership and recovery defined |
+| Open · I02 | Service catalog and dependency resolution | 60–90m | I01,C07 | Versioned allowlisted catalog and dependency planner | Valid selections resolve deterministically; missing dependencies and conflicts rejected; only validated service adapters enabled |
+| Open · I03 | Persistent environment provisioning and lifecycle | 60–90m | I02,B07 | Restricted host provisioning and durable environment state | Create, start, stop and resume without losing volumes; reconcile actual state; no interference with autopilot |
+| Open · I04 | Free Lab configuration workspace | 60–90m | I03 | Service selector, presets, deployment plan and lifecycle UI | Explicit apply; actual state and errors visible; no arbitrary commands or targets |
+| Open · I05 | Experiment container and developer tooling | 60–90m | I03 | Pinned experiment image, sample scripts and Bash/PowerShell access instructions | Users can independently interact with enabled APIs and develop agents; no host socket or privileged browser shell |
+| Open · I06 | Service endpoints, logs and native UI integration | 60–90m | I04,H02 | Environment-scoped observations, endpoint directory and bounded sanitized logs | Every enabled supported service monitored; native interfaces reachable through approved local bindings; secrets excluded from dashboard logs |
+| Open · I07 | Save, import and export configurations | 45–60m | I04 | Versioned declarative configuration and presets | Round-trip configuration without secrets; reject unknown fields, executable content and arbitrary images/paths |
+| Open · I08 | Custom agent and tool integration | 60–90m | I05,E01 | Documented developer integration and isolated sample agents/MCP tools | User code interacts with selected services through documented interfaces; no execution of uploaded code by dashboard |
+| Open · I09 | Reset, cleanup and regression testing | 60–90m | I06,I07,I08 | Scoped reset/delete, recovery and cross-mode regression suite | Explicit destructive confirmation; only owned resources removed; evidence and other environments preserved; restart and conflict tests pass |
+
+Free Lab is a fourth learning mode, not a guided scenario or an automated assertion run. Users select validated services independently, configure policies and identities through native interfaces, run their own scripts, and retain state across dashboard restarts. Provide core security, workload identity and agent security presets; expand the catalog as D/E/H services are validated. Optional LiteLLM/Bifrost selection depends on H03–H05; synthetic model backend is the default for model-enabled experiments, with local/external providers optional after explicit configuration. Core experiments require no LLM.
+
+Use separate owned Compose projects, networks and volumes; resolve fixed-port conflicts before concurrent environments are allowed. Initially reject conflicting deployments rather than assume isolation. Persist environment metadata and reconcile after restart. Stop preserves data; reset/delete requires explicit confirmation and scoped cleanup. Keep localhost-only defaults, synthetic data, bounded allowlisted provisioning, no unrestricted Docker socket or arbitrary browser shell. User-authored code runs in a dedicated experiment environment or user-managed tooling, not the privileged dashboard process. Do not infer control effectiveness from health or free-form activity; automated assertions remain separately identified evidence.
+
+Finish B05–B07 first; coordinate I01 with H01 and I02 with C07. Deliver basic Free Lab through I03–I05 before all ten guided labs are complete. I06–I09 expand the experience as monitoring and service adapters mature. Estimates are timeboxes; split larger tasks as needed.
+
 ## Definition of done
 
 - Small reviewable commit; documentation and relevant tests updated.
@@ -158,3 +179,5 @@ H01 and H03 may be designed alongside MVP work. Coordinate H02 with B07 packagin
 | B03 validation | B03 | Windows user confirmed all 18 acceptance checks and optional live OpenBao test; exact symlink skip count not reported. | B04 |
 | Monitoring and gateway planning | H01–H05 | User requested full infrastructure monitoring and configurable LiteLLM/Bifrost; added follow-up work packages, implementation pending | B04 remains next |
 | B04 implementation | B04 | Trusted runner adapter, persistent dashboard lock, status API, UI and ADR published; validation pending | Validate offline tests and live execution |
+| B04 validation | B04 | User explicitly confirmed B04 validated; individual check results, exact test/skip counts and platform were not restated. No independent execution by author. | B05 |
+| Free Lab planning | I01–I09 | Added fourth learning mode, persistent independent experiments, isolation, provisioning, monitoring and developer tooling requirements; implementation pending | B05 remains next |
