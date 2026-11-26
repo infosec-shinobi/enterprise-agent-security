@@ -6,6 +6,7 @@ from collections import Counter
 from typing import Literal
 import yaml
 from fastapi import APIRouter, HTTPException, Response
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from tools.validate_manifest import ROOT, load_manifest
 
@@ -105,3 +106,22 @@ def get_lab(lab_id: str, response: Response):
         if lab.id == lab_id:
             return lab
     raise HTTPException(404, "Lab not found")
+
+
+@router.get("/{lab_id}/manual", response_class=PlainTextResponse)
+def get_manual(lab_id: str):
+    for lab in catalog_or_error().labs:
+        if lab.id != lab_id:
+            continue
+        path = ROOT / lab.manual_path
+        try:
+            if path.is_symlink() or not path.is_file() or path.resolve().parent.parent != (ROOT/"labs").resolve():
+                raise ValueError("Unsafe manual")
+            with path.open("rb") as f:
+                raw = f.read(100001)
+            if len(raw)>100000:
+                raise ValueError("Oversized manual")
+            return PlainTextResponse(raw.decode("utf-8"), headers={"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"})
+        except (OSError, ValueError):
+            raise HTTPException(503,"Manual unavailable") from None
+    raise HTTPException(404,"Lab not found")
