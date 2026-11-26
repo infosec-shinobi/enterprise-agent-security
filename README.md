@@ -6,7 +6,14 @@ An open-source, vendor-neutral framework for securing AI agents across their ent
 
 ## Development roadmap
 
-The project is evolving into an interactive agent security playground with manual labs, real automated autopilot runs, sandbox control toggles, live topology and an evidence scorecard. See the [incremental development roadmap](ROADMAP.md) for small work packages, dependencies, acceptance criteria and the next recommended task. All labs follow the [cross-platform standard](docs/labs/cross-platform-standard.md).
+The project is evolving into an interactive agent security playground with live topology and an evidence scorecard. Four learning modes define the target experience:
+
+- **Manual:** guided cross-platform exercises.
+- **Autopilot:** real automated security assertions with disposable environments and evidence.
+- **Sandbox:** controlled security experiments and failure scenarios (planned).
+- **Free Lab:** persistent, independently configurable infrastructure for custom agents, tools, policies and open-ended experiments (planned; Phase I).
+
+ See the [incremental development roadmap](ROADMAP.md) for small work packages, dependencies, acceptance criteria and the next recommended task. All labs follow the [cross-platform standard](docs/labs/cross-platform-standard.md).
 
 ## Two views of agent security
 
@@ -31,7 +38,7 @@ flowchart TB
   subgraph DP["Execution / data plane"]
     AG["Agent runtime"]
     TOOL["Tool / MCP enforcement gateway"]
-    MODEL["Model gateway: LiteLLM"]
+    MODEL["Model gateway: optional LiteLLM / Bifrost (planned)"]
     API["Mock enterprise APIs & data"]
     AG --> TOOL --> API
     AG --> MODEL
@@ -61,7 +68,7 @@ flowchart TB
 - `docs/labs/` — lab progression and validation requirements
 - `labs/` — Lab 01 user-validated on Windows; [Lab 02 SPIRE](labs/02-spiffe-spire/README.md) experimental scaffold; [Lab 03 OpenBao](labs/03-openbao/README.md) unverified exercise
 - `infrastructure/` — Docker Compose configuration and lab integrations
-- `dashboard/` — [local playground scaffold and startup instructions](dashboard/README.md); live execution and evidence scorecard planned
+- `dashboard/` — [local playground scaffold and startup instructions](dashboard/README.md); Lab 01 execution validated; detailed evidence scorecard and Free Lab planned
 
 ## First milestone
 
