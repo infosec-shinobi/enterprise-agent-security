@@ -1,4 +1,4 @@
-# Playground — B04
+# Playground — B05
 
 Local development shell with B02 read-only manifest discovery; B03 host-side service probes; B04 allowlisted Lab 01 execution; no framework mappings or historical evidence ingestion yet. React/TypeScript/Vite on 127.0.0.1:5173 proxies /api to FastAPI on 127.0.0.1:8090. No Docker socket, CORS wildcard, arbitrary command endpoint or external listener. TrustedHost middleware is defense in depth, not authentication. Do not expose either development server to a network. Existing lab ports 8000/8001/8081 are unchanged.
 
@@ -6,7 +6,7 @@ Local development shell with B02 read-only manifest discovery; B03 host-side ser
 
 See [ADR-001 — Playground application technology stack](../docs/adr/ADR-001-playground-application-stack.md) for the decision, alternatives and tradeoffs.
 
-Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. The B02 backend discovers manifests via existing validators. B03 probes allowlisted services. B04 invokes the trusted host runner with a persistent dashboard lock. Future modules stream events (B05) and display detailed evidence (B06/F01). B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
+Frontend navigation and typed API client are independent of lab internals. Versioned /api/v1 routes expose health and capabilities. The B02 backend discovers manifests via existing validators. B03 probes allowlisted services. B04 invokes the trusted host runner with a persistent dashboard lock. B05 streams structured observations; B06/F01 will display detailed evidence. B07 handles packaging; no new Compose services in B01. Canonical control IDs remain in docs/controls/controls.json; G01 defines versioned external mapping packs, G04 projects evidence, G05 adds framework selection. No framework compliance inference. Proposed modules are not implemented yet.
 
 ## Prerequisites
 
@@ -120,7 +120,7 @@ Bash:
 
 Expect 33 tests, optional symlink skip. Build and start frontend. Ensure local Docker context and ports 8000/8001/8081 free, no concurrent CLI or Compose operations. Stop existing Lab 01 services only if safe; do not delete volumes. Open Runs, click Run Lab 01 and confirm. Observe running then pass, exit 0, evidence path. Refresh or navigate away and back during execution; run continues. Verify duplicate POST returns 409 while active. Verify evidence using existing report CLI and scoped project resource checks. Repeat with a new run ID. Start existing Lab 01 manually, then submit a run: expect error exit 2, evidence with not_required cleanup and occupied-port reason; original environment preserved. Restore original state. Run original tools regression. B04 validated by user on 2026-11-25. Individual acceptance results, exact test/skip counts and platform were not restated; author did not independently execute validation. B05 is next.
 
-API POST /api/v1/runs accepts only JSON {"lab_id":"lab-01"} with Origin http://127.0.0.1:5173 and X-EAS-Action: start-run (other exact local development origins in ADR implementation). GET /api/v1/runs returns latest and lock state; GET /api/v1/runs/{id} returns latest matching ID. No raw logs or cancellation. Browser disconnect does not cancel. Latest status is not durable; evidence is.
+API POST /api/v1/runs accepts only JSON {"lab_id":"lab-01"} with Origin http://127.0.0.1:5173 and X-EAS-Action: start-run (other exact local development origins in ADR implementation). GET /api/v1/runs returns latest and lock state; GET /api/v1/runs/{id} returns latest matching ID. No raw logs or cancellation; B05 adds structured events. Browser disconnect does not cancel. Latest status is not durable; evidence is.
 
 ### Recovery (only if lock persists)
 
@@ -129,3 +129,9 @@ Do not delete data/dashboard-run.lock while any runner or Compose operation is a
 ## Planned Free Lab mode
 
 Phase I in the [roadmap](../ROADMAP.md) adds persistent, independently configurable experimentation alongside manual, autopilot and sandbox modes. It depends on reviewed provisioning (C07), environment isolation and monitoring contracts (I01/H01), and MVP packaging (B07). Native service interfaces and a dedicated experiment container support custom scripts without an arbitrary host command API. Free Lab is not implemented yet.
+
+## B05 — Structured operation events
+
+See [ADR-005](../docs/adr/ADR-005-structured-operation-events.md). Run the B04 application test command with dashboard.backend.test_events appended (40 tests expected, optional symlink skip). Run original tools regression and npm run build. Start single-worker API and frontend as above. With lab ports free, start Lab 01 from Runs. Observe accepted, manifest validation, provisioning, readiness/authentication, five assertion events, cleanup, evidence saved and terminal outcome. Verify sequence IDs increase, no credentials or raw logs, and final status matches validated evidence. Navigate away and back or reload during execution: replay from beginning, no duplicate sequence IDs, no new execution. For a completed run, use curl.exe (PowerShell) or curl (Bash) -N -H "Last-Event-ID: 3" http://127.0.0.1:8090/api/v1/runs/<run-id>/events; expect only IDs greater than 3 and terminal close. Invalid cursor 400, unknown run 404. Repeat occupied-port test: no invented readiness or assertions, terminal error, original infrastructure preserved. Verify lock release and scoped cleanup on successful run. B05 validation pending.
+
+Event journal is latest-run only and memory resident; restart loses replay, not evidence. Spool is bounded to 32 KiB / 128 runner observations and removed after supervision; abnormal termination can leave ignored files. Eight simultaneous SSE streams maximum. Heartbeats approximately every 10 seconds. REST polling remains authoritative. Sandbox and Free Lab adapters are planned, not implemented. No new dependencies.
