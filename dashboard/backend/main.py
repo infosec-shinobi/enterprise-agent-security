@@ -28,7 +28,7 @@ class Capabilities(BaseModel):
     lab_discovery: bool = True
     service_health: bool = True
     execution: bool = True
-    evidence: bool = False
+    evidence: bool = True
     framework_mapping: bool = False
 
 @app.get("/api/v1/capabilities", response_model=Capabilities)
