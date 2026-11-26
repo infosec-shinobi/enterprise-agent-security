@@ -6,6 +6,9 @@ import re
 import subprocess
 import sys
 import threading
+import time
+from fastapi.responses import StreamingResponse
+from dashboard.backend.events import Journal
 import uuid
 from datetime import datetime, timezone
 from typing import Literal
@@ -71,6 +74,8 @@ class Manager:
         self.marker = self.directory / "dashboard-run.lock"
         self.guard = threading.Lock()
         self.latest = None
+        self.journal = None
+        self.stream_slots = threading.BoundedSemaphore(8)
         self.launch = launch or self.execute
 
     def snapshot(self):
@@ -94,18 +99,45 @@ class Manager:
             except FileExistsError:
                 raise Busy from None
             self.latest = run
+            self.journal = Journal(run_id)
+            self.journal.append('accepted')
             try:
                 threading.Thread(target=self.worker, args=(run,), daemon=False).start()
             except RuntimeError:
                 self.latest = run.model_copy(update={"status":"error","finished_at":now(),
                     "reason":"Worker could not start","recovery_required":True})
+                self.journal.finish("error", True)
             return run
 
     def execute(self, run):
         env = local_environment()
-        return subprocess.run([sys.executable, "-E", "-s", str(ADAPTERS[run.lab_id]), "--run-id", run.run_id],
-            cwd=ROOT, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL, timeout=TIMEOUT, check=False).returncode
+        path = self.directory / ("events-"+run.run_id+".jsonl")
+        with path.open("xb"):
+            pass
+        try:
+            with subprocess.Popen([sys.executable, "-E", "-s", str(ADAPTERS[run.lab_id]), "--run-id", run.run_id, "--events"],
+                cwd=ROOT, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL) as child:
+                deadline = time.monotonic()+TIMEOUT
+                try:
+                    while True:
+                        self.journal.ingest(path)
+                        code = child.poll()
+                        if code is not None:
+                            self.journal.ingest(path)
+                            return code
+                        if time.monotonic() >= deadline:
+                            raise subprocess.TimeoutExpired("trusted runner", TIMEOUT)
+                        time.sleep(.25)
+                finally:
+                    if child.poll() is None:
+                        child.kill()
+                        child.wait()
+        finally:
+            try:
+                path.unlink()
+            except OSError:
+                pass
 
     def worker(self, run):
         code = None
@@ -138,6 +170,7 @@ class Manager:
                     except OSError:
                         updates.update(status="error",reason="Run lock could not be released",recovery_required=True)
                 self.latest = run.model_copy(update={**updates,"exit_code":code,"finished_at":now()})
+                self.journal.finish(self.latest.status, self.latest.recovery_required)
 
 manager = Manager()
 
@@ -169,3 +202,31 @@ def start_run(body: Start, request: Request, response: Response):
         raise HTTPException(409,"Run active or recovery required") from None
     except OSError:
         raise HTTPException(503,"Execution state unavailable") from None
+
+
+@router.get("/{run_id}/events")
+async def run_events(run_id: str, request: Request):
+    with manager.guard:
+        journal = manager.journal
+        slots = manager.stream_slots
+        if journal is None or journal.operation_id != run_id:
+            raise HTTPException(404, "Run not found")
+    origin = request.headers.get("origin")
+    if origin is not None and origin not in ORIGINS:
+        raise HTTPException(403, "Origin rejected")
+    raw = request.headers.get("last-event-id", "0")
+    if not re.fullmatch(r"[0-9]{1,4}", raw):
+        raise HTTPException(400, "Invalid event cursor")
+    cursor = int(raw)
+    if cursor > journal.read(0)[2]:
+        raise HTTPException(400, "Invalid event cursor")
+    if not slots.acquire(blocking=False):
+        raise HTTPException(429, "Too many event streams")
+    async def body():
+        try:
+            async for frame in journal.stream(cursor, request):
+                yield frame
+        finally:
+            slots.release()
+    return StreamingResponse(body(), media_type="text/event-stream",
+        headers={"Cache-Control":"no-store", "X-Accel-Buffering":"no"})
