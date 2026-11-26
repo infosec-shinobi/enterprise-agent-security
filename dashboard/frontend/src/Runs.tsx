@@ -1,4 +1,5 @@
 import {useEffect,useState} from 'react';
+import Timeline from './Timeline';
 import {getRuns,startRun,type RunSnapshot} from './api';
 
 export default function Runs(){
@@ -47,7 +48,8 @@ export default function Runs(){
    {latest.exit_code!==null&&<p>Exit code: {latest.exit_code}</p>}
    {latest.evidence_path&&<p>Evidence: {latest.evidence_path}</p>}
    {latest.recovery_required&&<p role="alert">Manual recovery required. Do not remove the lock until runner termination and scoped cleanup are verified.</p>}
-   <p>Live event streaming and detailed assertion results arrive in B05/B06.</p>
+   <p>Detailed evidence results arrive in B06.</p>
   </article>}
+  {latest&&<Timeline key={latest.run_id} runId={latest.run_id}/>}
  </section>
 }
