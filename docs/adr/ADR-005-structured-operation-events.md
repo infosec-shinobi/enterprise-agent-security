@@ -1,0 +1,9 @@
+# ADR-005 — Structured operation events
+
+Status: Accepted for B05 implementation; validation pending.
+
+Use a versioned operation envelope (operation_id, mode, sequence, observed_at, kind, typed optional assertion or terminal fields). B05 implements Autopilot only; Sandbox and Free Lab will add explicit vocabularies and adapters later. Sequence is assigned by the manager; observed_at is collection time, not source execution time. Events are observations, not evidence.
+
+Use a dedicated bounded local JSON-lines spool derived from the trusted run UUID, not raw stdout/stderr or arbitrary caller paths. Runner emits fixed phase names and allowlisted scenario/status fields only. Manager polls the spool while supervising the same child deadline; partial lines are deferred, invalid/oversized input produces a fixed observation_gap. No tokens, raw HTTP bodies, environment, paths or arbitrary messages are streamed. Trusted local repository and filesystem remain the boundary. Spool is removed after supervision; crash remnants may remain in ignored data/. Latest journal is memory-only, bounded, and replaced on the next accepted run; restart loses replay. Evidence and persistent execution marker remain authoritative.
+
+SSE is read-only, same-origin, with Last-Event-ID replay, heartbeat and terminal close. Limit concurrent streams; no per-client unbounded queue. REST polling remains authoritative for run state. Disconnect does not cancel execution. Browser closes stream on terminal event and deduplicates by sequence. Unknown/expired operation returns 404; invalid cursor returns 400. No historical event store or multi-user authentication. Alternatives: WebSocket adds bidirectional complexity; raw subprocess log streaming risks disclosure; polling alone loses intermediate transitions. Revisit durable events and authorization before multi-user deployment.
