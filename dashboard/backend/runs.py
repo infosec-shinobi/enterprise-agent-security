@@ -9,6 +9,7 @@ import threading
 import time
 from fastapi.responses import StreamingResponse
 from dashboard.backend.events import Journal
+from dashboard.backend.results import load_report, project_report, safe_reason, ResultView
 import uuid
 from datetime import datetime, timezone
 from typing import Literal
@@ -155,8 +156,9 @@ class Manager:
                 raise ValueError("Evidence mismatch")
             updates["evidence_path"] = "data/evidence/"+run.run_id+".json"
             if report["cleanup"] not in ("success","not_required"):
+                updates["reason"] = "Cleanup not confirmed; manual recovery required"
                 raise ValueError("Cleanup not confirmed")
-            updates.update(status=report["outcome"], reason="Validated runner evidence",
+            updates.update(status=report["outcome"], reason=safe_reason(report["reason"]),
                            recovery_required=False)
         except subprocess.TimeoutExpired:
             updates["reason"] = "Runner deadline exceeded; inspect disposable project"
@@ -230,3 +232,27 @@ async def run_events(run_id: str, request: Request):
             slots.release()
     return StreamingResponse(body(), media_type="text/event-stream",
         headers={"Cache-Control":"no-store", "X-Accel-Buffering":"no"})
+
+
+@router.get("/{run_id}/evidence", response_model=ResultView)
+def run_evidence(run_id: str, request: Request, response: Response):
+    response.headers["Cache-Control"] = "no-store"
+    origin = request.headers.get("origin")
+    if origin is not None and origin not in ORIGINS:
+        raise HTTPException(403, "Origin rejected")
+    snapshot = manager.snapshot()
+    latest = snapshot.latest
+    if latest and latest.run_id == run_id:
+        if latest.status == "running":
+            raise HTTPException(409, "Run still executing")
+        if not latest.evidence_path:
+            raise HTTPException(404, "Validated evidence unavailable")
+    try:
+        report = load_report(manager.directory, run_id)
+        if latest and latest.run_id == run_id and report["exit_code"] != latest.exit_code:
+            raise ValueError("Evidence exit code mismatch")
+        return project_report(report)
+    except FileNotFoundError:
+        raise HTTPException(404, "Evidence not found") from None
+    except (OSError, ValueError, ValidationError, KeyError, TypeError, RecursionError):
+        raise HTTPException(422, "Evidence invalid or unavailable") from None
