@@ -1,6 +1,8 @@
 # ADR-005 — Structured operation events
 
-Status: Accepted for B05 implementation; validation pending.
+Status: Accepted; functional validation confirmed by user.
+
+User confirmed 17 of 18 acceptance checks passed on 2026-11-25: dashboard and tools regression, frontend build, live events, assertion results, ordered SSE replay and reconnect, invalid cursor rejection, browser independence, evidence agreement, lock release, scoped cleanup and occupied-port protection. Original tools suite reported 22 tests and one skip; discrepancy from expected 23 remains unreconciled. Light/dark timeline verification outstanding, carried into B06. No independent execution by author.
 
 Use a versioned operation envelope (operation_id, mode, sequence, observed_at, kind, typed optional assertion or terminal fields). B05 implements Autopilot only; Sandbox and Free Lab will add explicit vocabularies and adapters later. Sequence is assigned by the manager; observed_at is collection time, not source execution time. Events are observations, not evidence.
 
