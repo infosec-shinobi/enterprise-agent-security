@@ -1,9 +1,13 @@
 # ADR-004 — Trusted runner execution
 
-Status: Accepted for B04; validation pending.
+Status: Accepted; B04 validation confirmed by user on 2026-11-25. Individual results, exact test/skip counts and platform not restated.
 
 Use an explicit server-owned adapter table, fixed interpreter and script arguments, a generated UUID shared with runner evidence, a non-daemon worker and exclusive persistent marker under ignored data/. No shell, caller paths, arbitrary Docker arguments, raw logs or cancellation endpoint. The marker serializes dashboard runs across processes and survives abnormal shutdown; it is not a lock shared with the independent CLI. Do not run CLI or manual Compose concurrently. Local host administrator and repository are trusted. Reject browser origins outside the exact development origins, require JSON and custom action header; this is CSRF defense, not authentication. No external listener or CORS. Local Docker context is inspected and pinned; remote endpoints and explicit DOCKER_HOST rejected. Local socket forwarding cannot be detected.
 
 The runner retains occupied-port checks, disposable project naming, bounded Compose calls, scenario assertions and scoped cleanup. Outer deadline 1000 seconds kills the Python child if exceeded; descendant processes or daemon operations may survive. Never automatically retry or remove resources after uncertain termination. Retain marker on missing/invalid evidence, timeout or unconfirmed cleanup; manual recovery requires verifying no runner/Compose operation remains and inspecting only the recorded project. No automatic stale-lock expiry. Successful validated evidence with matching ID, project, lab and exit code and confirmed cleanup releases marker. Latest status is in memory, evidence persists; after restart a surviving marker blocks new runs. Historical evidence UI and SSE deferred. No guarantee of cleanup on forced shutdown. No unrestricted Docker socket exposed to browser or container.
 
 Alternatives: direct in-process runner risks blocking and global state; generic command API is unsafe; external job queue adds unnecessary infrastructure for one local run. Revisit packaging, durable job reconciliation, authentication and cancellation before broader deployment.
+
+## Future persistent environments
+
+Phase I introduces Free Lab separately from disposable runner execution. I01 and C07 must define shared resource ownership, conflict prevention and recovery before provisioning is enabled. B04's existing dashboard lock is not sufficient to coordinate independent persistent environments or CLI activity. No change to runtime behavior is made by this planning update.
