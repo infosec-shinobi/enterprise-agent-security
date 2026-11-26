@@ -13,6 +13,7 @@ import yaml
 from http_runner import HttpRunner, RunnerError
 from validate_manifest import ROOT, load_manifest
 import evidence
+from operation_events import Emitter
 from jsonschema import ValidationError
 
 REGISTRY = "http://localhost:8000"
@@ -69,7 +70,8 @@ def ready(runner):
     raise RunnerError("Service readiness timed out")
 
 
-def run_scenarios(runner, manifest, run):
+def run_scenarios(runner, manifest, run, emitter=None):
+    emitter = emitter or Emitter()
     scenarios = manifest["scenarios"]
     expected_contract = [(s, "lab-01-" + s, status) for s, _, status in ORDER]
     if [(s["id"], s["action"], s["expected"]["http_status"]) for s in scenarios] != expected_contract:
@@ -89,6 +91,7 @@ def run_scenarios(runner, manifest, run):
             raise
         finally:
             entry["finished_at"] = evidence.now()
+        emitter.emit("assertion", scenario=scenario["id"], outcome=result.outcome, expected=result.expected, actual=result.actual)
         print(json.dumps({"scenario": scenario["id"], **asdict(result)}), flush=True)
         if result.outcome != "pass":
             return 1 if result.outcome == "fail" else 2
@@ -98,12 +101,14 @@ def run_scenarios(runner, manifest, run):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-id", help="Optional preallocated dashboard run UUID")
+    parser.add_argument("--events", action="store_true", help="Emit bounded dashboard observations")
     args = parser.parse_args()
     if args.run_id is not None and not re.fullmatch(r"[0-9a-f]{32}", args.run_id):
         parser.error("Invalid run ID")
     run_id = args.run_id or uuid.uuid4().hex
     if (evidence.OUTPUT / (run_id + ".json")).exists():
         parser.error("Run evidence already exists")
+    emitter = Emitter(ROOT / "data" / ("events-"+run_id+".jsonl") if args.events else None)
     project = "eas-a04-" + run_id
     run = evidence.new_run(run_id, project)
     clock = time.monotonic()
@@ -113,6 +118,7 @@ def main():
         manifest_path = ROOT / "labs/01-control-plane/manifest.yaml"
         manifest = load_manifest(manifest_path)
         evidence.initialize(run, manifest, manifest_path)
+        emitter.emit("manifest_validated")
         # Refuse occupied host ports before creating any resources; Compose
         # also enforces exclusive port bindings during startup.
         import socket
@@ -122,11 +128,14 @@ def main():
                 if sock.connect_ex(("127.0.0.1", port)) == 0:
                     raise RunnerError("Host port occupied: " + str(port))
         print("Disposable project: " + project, flush=True)
+        emitter.emit("provisioning")
         started = True
         compose(project, "up", "--build", "-d")
         with HttpRunner() as runner:
             ready(runner)
-            code = run_scenarios(runner, manifest, run)
+            emitter.emit("services_ready")
+            emitter.emit("authenticated")
+            code = run_scenarios(runner, manifest, run, emitter)
             run["reason"] = {0:"All assertions passed",1:"Security assertion mismatch",2:"Scenario execution error"}[code]
     except RunnerError as exc:
         code = 2
@@ -141,19 +150,25 @@ def main():
         run["reason"] = "Interrupted"
         print("Interrupted")
     finally:
+        if code == 2:
+            emitter.emit("runner_error")
         if started:
+            emitter.emit("cleanup_started")
             try:
                 compose(project, "down", "-v", timeout=120)
                 run["cleanup"] = "success"
+                emitter.emit("cleanup_succeeded")
                 print("Cleanup complete: " + project)
             except (OSError, subprocess.SubprocessError, KeyboardInterrupt):
                 print("Cleanup failed; inspect project: " + project)
                 run["cleanup"] = "error"
+                emitter.emit("cleanup_failed")
                 run["reason"] = "Cleanup failed"
                 code = 2
         evidence.finish(run, code, clock)
         try:
             target = evidence.save(run)
+            emitter.emit("evidence_saved")
             print("Evidence: " + str(target))
         except (OSError, ValueError, ValidationError):
             print("ERROR: evidence persistence failed")
