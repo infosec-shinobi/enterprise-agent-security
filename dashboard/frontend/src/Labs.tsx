@@ -1,4 +1,5 @@
 import {useEffect,useState} from 'react';
+import Manual from './Manual';
 import {getLabs,type Lab,type Catalog} from './api';
 
 function LabCard({lab}:{lab:Lab}){
@@ -13,7 +14,7 @@ function LabCard({lab}:{lab:Lab}){
   <details><summary>Mapped security controls</summary>
    {lab.controls.map(c=><div key={c.id} className="control-detail"><strong>{c.id} — {c.name}</strong><p>{c.objective}</p><small>Enforcement: {c.enforcement_point}</small></div>)}
   </details>
-  <p>Manual guide: <code>{lab.manual_path}</code></p>
+  <p>Manual guide: <code>{lab.manual_path}</code></p><Manual labId={lab.id}/>
   <small>Expected outcomes only. Execution and service health are not checked here.</small>
  </article>
 }
