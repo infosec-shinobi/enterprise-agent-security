@@ -17,7 +17,7 @@ class Journal:
 
     def append(self, kind, **fields):
         with self.guard:
-            if self.closed or len(self.rows) >= MAX_EVENTS + 4:
+            if self.closed or (kind != "completed" and len(self.rows) >= MAX_EVENTS + 2):
                 return
             self.rows.append(dict(schema_version=1, operation_id=self.operation_id,
                 mode=self.mode, sequence=len(self.rows)+1,
@@ -43,6 +43,8 @@ class Journal:
                 row = normalize(json.loads(line))
                 if row is None:
                     raise ValueError("Invalid event")
+                if self.read(0)[2] >= MAX_EVENTS + 1:
+                    raise ValueError("Event count limit")
                 self.append(**row)
         except (OSError, ValueError, TypeError, RecursionError):
             self.degraded = True
