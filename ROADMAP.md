@@ -14,13 +14,14 @@ An interactive, local-first enterprise agent security playground with a vendor-n
 - [x] Read-only manifest discovery and dynamic lab cards validated on Windows.
 - [x] Host-side service observations validated on Windows, including optional OpenBao.
 - [x] Lab 01 trusted execution UI validated by user (B04).
-- [ ] Live events, detailed evidence dashboard, Free Lab and remaining labs not implemented.
+- [x] B05 live events functionally validated by user; theme verification outstanding.
+- [ ] Detailed evidence dashboard, Free Lab and remaining labs not implemented.
 
 ## How we work
 
 Pick one work ID per session. Read its dependencies, agree on the change, implement, review, run the smallest relevant test, record actual results and commit. Estimates are timeboxes, not guarantees; split unfinished tasks into smaller follow-ups. Do not mark a task complete solely because code was committed. Use GitHub issues optionally for discussion; this file is the canonical backlog. Update status and next action after each session.
 
-**Next recommended task: B05 — Validate structured event streaming.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
+**Next recommended task: B06 — Show results and manual mode.** D01 and D04 can be picked independently for hands-on infrastructure sessions. Build the GUI MVP before expanding the remaining lab suite.
 
 ## Work packages
 
@@ -43,8 +44,8 @@ Pick one work ID per session. Read its dependencies, agree on the change, implem
 | Complete · B02 | Discover lab manifests | 45m | A02,B01 | Read-only lab catalog endpoint and cards | Lab 01 appears without hardcoded frontend metadata |
 | Complete · B03 | Service health view | 45–60m | B01 | Bounded probes and health cards | Running, unavailable and unknown states distinguished |
 | Complete · B04 | Run Lab 01 from UI | 60–90m | A05,B02 | Run endpoint and single-run lock | Click starts real runner; duplicate run rejected |
-| In progress · B05 | Stream run events | 60–90m | B04 | SSE endpoint and timeline | Ordered real events appear; disconnect/reconnect supported |
-| Open · B06 | Show results and manual mode | 45–60m | B05 | Expected/actual results and manual instructions | UI displays pass/fail/error and links Bash/PowerShell guide |
+| Complete · B05 | Stream run events | 60–90m | B04 | SSE endpoint and timeline | Ordered real events appear; disconnect/reconnect supported |
+| Open · B06 | Show results and manual mode | 45–60m | B05 | Expected/actual results and manual instructions | UI displays pass/fail/error, safe execution diagnostics and links Bash/PowerShell guide; verify timeline in both themes |
 | Open · B07 | Package MVP | 45–90m | B06 | Compose profile and startup docs | Localhost-only startup; Windows and Bash walkthroughs |
 
 ### C — Interactive sandbox
@@ -182,3 +183,4 @@ Finish B05–B07 first; coordinate I01 with H01 and I02 with C07. Deliver basic 
 | B04 validation | B04 | User explicitly confirmed B04 validated; individual check results, exact test/skip counts and platform were not restated. No independent execution by author. | B05 |
 | Free Lab planning | I01–I09 | Added fourth learning mode, persistent independent experiments, isolation, provisioning, monitoring and developer tooling requirements; implementation pending | B05 remains next |
 | B05 implementation | B05 | Bounded runner observations, SSE replay, React timeline and ADR-005 published; validation pending | Validate offline and live runs |
+| B05 validation | B05 | User confirmed 17 of 18 acceptance checks passed on 2026-11-25: dashboard and tools regression, frontend build, live events, assertion results, ordered SSE replay and reconnect, invalid cursor rejection, browser independence, evidence agreement, lock release, scoped cleanup and occupied-port protection. Original tools suite reported 22 tests and one skip; discrepancy from expected 23 remains unreconciled. Light/dark timeline verification outstanding, carried into B06. No independent execution by author. | B06 |
