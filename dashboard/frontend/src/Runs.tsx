@@ -1,5 +1,7 @@
 import {useEffect,useState} from 'react';
 import Timeline from './Timeline';
+import Results from './Results';
+import Manual from './Manual';
 import {getRuns,startRun,type RunSnapshot} from './api';
 
 export default function Runs(){
@@ -48,8 +50,10 @@ export default function Runs(){
    {latest.exit_code!==null&&<p>Exit code: {latest.exit_code}</p>}
    {latest.evidence_path&&<p>Evidence: {latest.evidence_path}</p>}
    {latest.recovery_required&&<p role="alert">Manual recovery required. Do not remove the lock until runner termination and scoped cleanup are verified.</p>}
-   <p>Detailed evidence results arrive in B06.</p>
+   {latest.status==='error'&&<p>Execution error is not a failed security assertion.</p>}
   </article>}
+  {latest&&latest.status!=='running'&&latest.evidence_path&&<Results key={latest.run_id} runId={latest.run_id}/>}
+  <Manual labId="lab-01"/>
   {latest&&<Timeline key={latest.run_id} runId={latest.run_id}/>}
  </section>
 }
