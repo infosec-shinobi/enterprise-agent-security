@@ -93,9 +93,6 @@ def project_report(report):
         raise ValueError("Unknown or duplicate scenarios")
     if matches and ids != list(contract):
         raise ValueError("Incomplete scenario contract")
-    if report["outcome"]=="pass" and not matches:
-        # Historical evidence can be valid but cannot establish current coverage.
-        pass
     for s in rows:
         if any(c not in controls for c in s["controls"]):
             raise ValueError("Unknown controls")
